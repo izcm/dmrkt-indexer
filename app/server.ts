@@ -1,21 +1,23 @@
 import Fastify from 'fastify'
-import mongodb from '@fastify/mongodb'
 
+import { mongo } from './db/mongo.js'
 import { ordersIngest } from './ingest/order.rest.js'
+
+// schemas
+import { OrderSchema } from './db/schemas/order.js'
 
 const fastify = Fastify({
   logger: true,
 })
 
-const MONGODB_URI = process.env.MONGODB_URI
-
 export const start = async () => {
-  fastify.register(mongodb, {
-    forceClose: true,
-    url: MONGODB_URI,
-    database: 'dmrkt',
-  })
+  // infra plugins
+  fastify.register(mongo)
 
+  // schemas
+  fastify.addSchema(OrderSchema)
+
+  // routes
   fastify.register(ordersIngest, { prefix: '/orders' })
 
   fastify.listen({ port: 5000, host: '0.0.0.0' }, function (err, address) {
