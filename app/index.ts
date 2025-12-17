@@ -1,14 +1,5 @@
 import 'dotenv/config'
 
-import { startServer } from './server'
-import { connectDB } from './db/mongo'
+import { start } from './server.js'
 
-async function main() {
-  await connectDB()
-  await startServer()
-}
-
-main().catch(err => {
-  console.error(err)
-  process.exit(1)
-})
+await start()

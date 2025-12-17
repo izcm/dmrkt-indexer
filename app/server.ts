@@ -1,12 +1,28 @@
 import Fastify from 'fastify'
+import mongodb from '@fastify/mongodb'
 
-// local
-import { ordersIngest } from './ingest/order.rest'
+import { ordersIngest } from './ingest/order.rest.js'
 
-export const startServer = async () => {
-  const app = Fastify({ logger: true })
+const fastify = Fastify({
+  logger: true,
+})
 
-  app.register(ordersIngest, { prefix: '/orders' })
+const MONGODB_URI = process.env.MONGODB_URI
 
-  await app.listen({ port: 3001 })
+export const start = async () => {
+  fastify.register(mongodb, {
+    forceClose: true,
+    url: MONGODB_URI,
+    database: 'dmrkt',
+  })
+
+  fastify.register(ordersIngest, { prefix: '/orders' })
+
+  fastify.listen({ port: 5000, host: '0.0.0.0' }, function (err, address) {
+    if (err) {
+      fastify.log.error(err)
+      process.exit(1)
+    }
+    fastify.log.info(`server listening on ${address}`)
+  })
 }
