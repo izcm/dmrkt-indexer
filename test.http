@@ -1,8 +1,0 @@
-### health
-POST http://localhost:5000/orders
-Content-Type: application/json
-
-{
-  "hello": "world",
-  "price": 123
-}

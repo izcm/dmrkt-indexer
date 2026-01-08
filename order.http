@@ -1,0 +1,21 @@
+### ORDERS
+POST http://localhost:5000/api/orders
+Content-Type: application/json
+
+{
+  "actor": "0x31F1a4B4f9f7CAD3f21bF9F2c3840C5CcF7B85b9",
+  "collection": "0x6FE69253967982531bDe0C06476e7fe427f3F56c",
+  "currency": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+  "end": 1766454279,
+  "isCollectionBid": false,
+  "nonce": "1",
+  "price": "100000000000000000",
+  "side": 0,
+  "signature": {
+    "r": "0x990665297d7fe4aac4d15b4d255aab45128e2b39b2412cd4467acca99b0e7db5",
+    "s": "0x2dd482557c37ff19e0ef2caeac5b8f2afa7b3765a06c27850feeac022ab82c79",
+    "v": 28
+  },
+  "start": 0,
+  "tokenId": "2"
+}

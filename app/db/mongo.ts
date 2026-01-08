@@ -1,9 +1,10 @@
-import { FastifyInstance } from 'fastify'
+import fp from 'fastify-plugin'
 import mongodb from '@fastify/mongodb'
+import { FastifyInstance } from 'fastify'
 
 const MONGODB_URI = process.env.MONGODB_URI
 
-export const mongo = async (app: FastifyInstance) => {
+export const dbConnector = fp(async (app: FastifyInstance) => {
   if (!MONGODB_URI) {
     throw new Error('MONGODB_URI is not set')
   }
@@ -13,4 +14,4 @@ export const mongo = async (app: FastifyInstance) => {
     url: MONGODB_URI,
     database: 'dmrkt',
   })
-}
+})
