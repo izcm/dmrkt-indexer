@@ -1,6 +1,6 @@
 import Fastify from 'fastify'
 
-import { dbConnector } from './db/mongo.js'
+import { dbConnector } from './db/mongo.fastify.js'
 import { ordersIngest } from './ingest/order.rest.js'
 
 // schemas

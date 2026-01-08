@@ -2,16 +2,17 @@ import fp from 'fastify-plugin'
 import mongodb from '@fastify/mongodb'
 import { FastifyInstance } from 'fastify'
 
-const MONGODB_URI = process.env.MONGODB_URI
-
 export const dbConnector = fp(async (app: FastifyInstance) => {
-  if (!MONGODB_URI) {
-    throw new Error('MONGODB_URI is not set')
+  const MONGODB_URI = process.env.MONGODB_URI
+  const DB_NAME = process.env.DB_NAME
+
+  if (!MONGODB_URI || !DB_NAME) {
+    throw new Error('Error reading db config from .env')
   }
 
   await app.register(mongodb, {
     forceClose: true,
     url: MONGODB_URI,
-    database: 'dmrkt',
+    database: DB_NAME,
   })
 })

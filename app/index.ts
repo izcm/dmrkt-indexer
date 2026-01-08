@@ -1,6 +1,19 @@
 import 'dotenv/config'
 
+// listener
+import { initDb } from './db/mongo.client.js'
 import './listeners/listener.js'
-import { start } from './server.js'
 
-await start()
+// api
+import { start } from './server.js'
+import { mainnet } from 'viem/chains'
+
+async function main() {
+  await initDb()
+  await start()
+}
+
+main().catch(err => {
+  console.log(err)
+  process.exit(1)
+})
