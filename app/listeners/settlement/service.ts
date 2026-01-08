@@ -1,4 +1,4 @@
-import { getDb } from '../../db/mongo.client.js'
+import { getDb } from '#app/db/mongo.client'
 
 // types
 import { Settlement } from '../../domain/settlement.js'

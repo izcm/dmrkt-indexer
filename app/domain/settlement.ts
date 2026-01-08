@@ -1,4 +1,4 @@
-import type { BlockRef, IngestionContext } from '@/listeners/types/context.js'
+import type { BlockRef } from '#app/listeners/types/context'
 
 export type Settlement = {
   orderHash: string

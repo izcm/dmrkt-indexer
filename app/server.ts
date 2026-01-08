@@ -1,7 +1,10 @@
 import Fastify from 'fastify'
 
 import { dbConnector } from './db/mongo.fastify.js'
-import { ordersIngest } from './ingest/order.rest.js'
+
+// api routes
+import { ordersIngest } from './api/ingest/order.post.js'
+import { settlementsQuery } from './api/query/settlement.get.js'
 
 // schemas
 import { OrderSchema } from './db/schemas/order.js'
@@ -19,6 +22,7 @@ export const start = async () => {
 
   // routes
   app.register(ordersIngest, { prefix: '/api/orders' })
+  app.register(settlementsQuery, { prefix: '/api/settlements' })
 
   app.listen({ port: 5000, host: '0.0.0.0' }, function (err, address) {
     if (err) {

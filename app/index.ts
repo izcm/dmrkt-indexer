@@ -6,7 +6,6 @@ import './listeners/listener.js'
 
 // api
 import { start } from './server.js'
-import { mainnet } from 'viem/chains'
 
 async function main() {
   await initDb()

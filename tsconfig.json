@@ -6,10 +6,11 @@
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
+    "rootDir": ".",
     "outDir": "dist",
     "baseUrl": ".",
     "paths": {
-      "@/*": ["app/*"]
+      "#app/*": ["app/*.js"]
     }
   },
   "include": ["app"],
