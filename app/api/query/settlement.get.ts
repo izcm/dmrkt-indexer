@@ -1,11 +1,25 @@
+import { mongodb } from '@fastify/mongodb'
 import { FastifyInstance } from 'fastify'
-import { ObjectId } from 'mongodb'
 
-export const settlementsQuery = (app: FastifyInstance) => {
-  const dbCollection = app.mongo.db?.collection('settlements')
+export const settlementsQuery = (fastify: FastifyInstance) => {
+  const dbCollection = fastify.mongo.db?.collection('settlements')
+  const { ObjectId } = fastify.mongo
+
+  if (!dbCollection) throw new Error("Coudln't find db settlements")
   const addrRegex = '^0x[a-fA-F0-9]{40}$'
 
-  app.get(
+  fastify.get('/:id', async (req, reply) => {
+    const raw = (req.params as { id: string }).id
+
+    if (!ObjectId.isValid(raw)) {
+      reply.code(400)
+    }
+
+    const id = new ObjectId(raw)
+    return dbCollection.findOne({ _id: id })
+  })
+
+  fastify.get(
     '/',
     {
       schema: {
@@ -43,11 +57,11 @@ export const settlementsQuery = (app: FastifyInstance) => {
 
         query.$or = [
           { 'block.timestamp': { $lt: Number(ts) } },
-          { 'block.timestamp': Number(ts), _id: { $lt: new ObjectId(id) } },
+          { 'block.timestamp': Number(ts), _id: { $lt: new ObjectId(id as string) } },
         ]
       }
 
-      const results = dbCollection!
+      const results = dbCollection
         .find(query)
         .sort({ 'block.timestamp': -1, _id: -1 })
         .limit(limit ?? 50)

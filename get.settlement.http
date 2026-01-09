@@ -1,19 +1,12 @@
-### SETTLEMENTS - List all
-GET http://localhost:5000/api/settlements?limit=10
+### Get settlement by ID
+GET http://localhost:5000/api/settlements/695f5b4d9f2e2b0db8fb688e
 
-###
-### SETTLEMENTS - By collection and token
-GET http://localhost:5000/api/settlements?collection=0x6FE69253967982531bDe0C06476e7fe427f3F56c&tokenId=2&limit=20
+###  List all 
+GET http://localhost:5000/api/settlements?limit=10&
 
-###
-### SETTLEMENTS - By seller
+### By seller
 GET http://localhost:5000/api/settlements?seller=0x31F1a4B4f9f7CAD3f21bF9F2c3840C5CcF7B85b9&limit=10
 
-###
-### SETTLEMENTS - By buyer
-GET http://localhost:5000/api/settlements?buyer=0x31F1a4B4f9f7CAD3f21bF9F2c3840C5CcF7B85b9&limit=10
-
-###
-### SETTLEMENTS - By date range
+### By date range
 GET http://localhost:5000/api/settlements?from=1700000000&to=1800000000&limit=50
 
