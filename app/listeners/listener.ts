@@ -2,7 +2,7 @@ import { parseAbi } from 'viem'
 
 import { publicClient as client } from '#app/client'
 
-import { handleSettlement } from './settlement/handler.js'
+import { handleSettlement } from './settlements/handler.js'
 import { ListenerItem } from './types/context.js'
 
 const target = '0xc80F9dA34212736BE29fcF9eD26B5951DDcc62Bb'

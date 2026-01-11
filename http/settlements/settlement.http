@@ -1,5 +1,5 @@
 ### Get settlement by ID
-GET http://localhost:5000/api/settlements/695f5b4d9f2e2b0db8fb688e
+GET http://localhost:5000/api/settlements/695f5b4d9f2e2b0db8fb6881
 
 ###  List all 
 GET http://localhost:5000/api/settlements?limit=10&

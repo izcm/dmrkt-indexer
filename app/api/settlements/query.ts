@@ -1,23 +1,31 @@
 import { mongodb } from '@fastify/mongodb'
-import { FastifyInstance } from 'fastify'
+import { FastifyInstance, RouteShorthandOptions } from 'fastify'
 
+// schemas
+import { byIdParams } from '#app/schemas/shared'
+
+const opts: RouteShorthandOptions = {}
 export const settlementsQuery = (fastify: FastifyInstance) => {
   const dbCollection = fastify.mongo.db?.collection('settlements')
   const { ObjectId } = fastify.mongo
 
-  if (!dbCollection) throw new Error("Coudln't find db settlements")
+  if (!dbCollection) throw new Error('Could not find db settlements')
   const addrRegex = '^0x[a-fA-F0-9]{40}$'
 
-  fastify.get('/:id', async (req, reply) => {
-    const raw = (req.params as { id: string }).id
+  fastify.get<{ Params: { id: string } }>(
+    '/:id',
+    { schema: { params: byIdParams } },
+    async (req, res) => {
+      const doc = await dbCollection.findOne({ _id: new ObjectId(req.params.id) })
 
-    if (!ObjectId.isValid(raw)) {
-      reply.code(400)
+      if (!doc) {
+        res.code(404)
+        return
+      }
+
+      return doc
     }
-
-    const id = new ObjectId(raw)
-    return dbCollection.findOne({ _id: id })
-  })
+  )
 
   fastify.get(
     '/',
@@ -25,6 +33,7 @@ export const settlementsQuery = (fastify: FastifyInstance) => {
       schema: {
         querystring: {
           type: 'object',
+          additionalProperties: false,
           properties: {
             collection: { type: 'string', pattern: addrRegex },
             tokenId: { type: 'string', pattern: '^[0-9]+$' },
@@ -36,7 +45,6 @@ export const settlementsQuery = (fastify: FastifyInstance) => {
             cursor: { type: 'string', pattern: '^[0-9]+_[a-fA-F0-9]{24}$' },
           },
         },
-        additionalProperties: false,
       },
     },
     async req => {
@@ -61,13 +69,11 @@ export const settlementsQuery = (fastify: FastifyInstance) => {
         ]
       }
 
-      const results = dbCollection
+      return dbCollection
         .find(query)
         .sort({ 'block.timestamp': -1, _id: -1 })
         .limit(limit ?? 50)
         .toArray()
-
-      return results
     }
   )
 }

@@ -2,12 +2,15 @@ import Fastify from 'fastify'
 
 import { dbConnector } from './db/mongo.fastify.js'
 
-// api routes
-import { ordersIngest } from './api/ingest/order.post.js'
-import { settlementsQuery } from './api/query/settlement.get.js'
+// api routes - ORDERS
+import { settlementsQuery } from './api/settlements/query.js'
+
+// api routes - SETTLEMENTS
+import { ordersIngest } from './api/orders/ingest.js'
+import { ordersQuery } from './api/orders/query.js'
 
 // schemas
-import { OrderSchema } from './db/schemas/order.js'
+import { orderBody } from './schemas/order.js'
 
 const app = Fastify({
   logger: true,
@@ -17,11 +20,14 @@ export const start = async () => {
   // infra plugins
   await app.register(dbConnector)
 
-  // schemas
-  app.addSchema(OrderSchema)
+  // register all defined bodies
+  app.addSchema(orderBody)
 
-  // routes
+  // routes - orders
   app.register(ordersIngest, { prefix: '/api/orders' })
+  app.register(ordersQuery, { prefix: '/api/orders' })
+
+  // routes - settlements
   app.register(settlementsQuery, { prefix: '/api/settlements' })
 
   app.listen({ port: 5000, host: '0.0.0.0' }, function (err, address) {
