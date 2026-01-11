@@ -1,16 +1,30 @@
 import { FastifyInstance } from 'fastify'
-import { Order } from '#app/domain/order'
+import { hashOrder, Order } from '#app/domain/order'
 
+// TODO: index orderhash on `order_status`
 export const ordersIngest = (fastify: FastifyInstance) => {
-  const dbCollection = fastify.mongo.db?.collection('orders')
+  const dbOrders = fastify.mongo.db?.collection('orders')
+  const dbOrderStates = fastify.mongo.db?.collection('order_states')
 
-  if (!dbCollection) throw new Error('Could not find db orders')
+  if (!dbOrders || !dbOrderStates) throw new Error('Could not find db orders')
 
-  fastify.post<{ Body: Order }>('/', { schema: { body: { $ref: 'order#' } } }, async (req, res) => {
-    const { insertedId } = await dbCollection.insertOne(req.body)
+  fastify.post<{ Body: Order }>(
+    '/',
+    { schema: { body: { $ref: 'order-create#' } } },
+    async (req, res) => {
+      // TODO: make rules eg. end > start && start >= now() etc. validation rules before insert
+      const { insertedId } = await dbOrders.insertOne(req.body)
 
-    res.code(201).header('Location', `/api/orders/${insertedId}`)
+      // create order_status doc
+      await dbOrderStates.insertOne({
+        orderHash: hashOrder(req.body as Order),
+        status: 'active',
+        updatedAt: Date.now(),
+      })
 
-    return { id: insertedId }
-  })
+      res.code(201).header('Location', `/api/orders/${insertedId}`)
+
+      return { id: insertedId }
+    }
+  )
 }

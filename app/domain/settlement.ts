@@ -1,12 +1,12 @@
-import type { BlockRef } from '#app/listeners/types/context'
+import { BlockRef } from '#app/listeners/types/context'
 
 export type Settlement = {
   orderHash: string
-  collection: string
+  collection: `0x${string}`
   tokenId: string
-  seller: string
-  buyer: string
-  currency: string
+  seller: `0x${string}`
+  buyer: `0x${string}`
+  currency: `0x${string}`
   priceWei: string
   txHash: string
 

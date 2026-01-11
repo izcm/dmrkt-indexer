@@ -13,8 +13,8 @@ export const orderQueryableFields = {
   isCollectionBid: { type: 'boolean' },
 }
 
-export const orderBody = {
-  $id: 'order',
+export const orderCreateBody = {
+  $id: 'order-create',
   type: 'object',
   required: [
     'actor',

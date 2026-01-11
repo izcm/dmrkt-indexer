@@ -10,7 +10,7 @@ import { ordersIngest } from './api/orders/ingest.js'
 import { ordersQuery } from './api/orders/query.js'
 
 // schemas
-import { orderBody } from './schemas/order.js'
+import { orderCreateBody } from './schemas/order.js'
 
 const app = Fastify({
   logger: true,
@@ -21,7 +21,7 @@ export const start = async () => {
   await app.register(dbConnector)
 
   // register all defined bodies
-  app.addSchema(orderBody)
+  app.addSchema(orderCreateBody)
 
   // routes - orders
   app.register(ordersIngest, { prefix: '/api/orders' })

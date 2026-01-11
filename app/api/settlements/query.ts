@@ -4,7 +4,6 @@ import { FastifyInstance, RouteShorthandOptions } from 'fastify'
 // schemas
 import { byIdParams } from '#app/schemas/shared'
 
-const opts: RouteShorthandOptions = {}
 export const settlementsQuery = (fastify: FastifyInstance) => {
   const dbCollection = fastify.mongo.db?.collection('settlements')
   const { ObjectId } = fastify.mongo
