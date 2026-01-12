@@ -6,7 +6,7 @@ Content-Type: application/json
   "actor": "0x31F1a4B4f9f7CAD3f21bF9F2c3840C5CcF7B85b9",
   "collection": "0x6FE69253967982531bDe0C06476e7fe427f3F56c",
   "currency": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-  "end": 0,
+  "end": 1766454279,
   "isCollectionBid": false,
   "nonce": "1",
   "price": "100000000000000000",
@@ -16,6 +16,6 @@ Content-Type: application/json
     "s": "0x2dd482557c37ff19e0ef2caeac5b8f2afa7b3765a06c27850feeac022ab82c79",
     "v": 28
   },
-  "start": 1766454279,
+  "start": 0,
   "tokenId": "2"
 }

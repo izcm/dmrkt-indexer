@@ -1,8 +1,6 @@
-# docker-compose.yml
+# local docker-compose
 services:
   mongo:
     image: mongo:7
-    container_name: dmrkt-mongo
     ports:
       - '27017:27017'
-# volumes + auto delete + script for setting mongodb indexes

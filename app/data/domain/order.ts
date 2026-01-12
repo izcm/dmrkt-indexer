@@ -23,7 +23,7 @@ export const validOrder = (o: Order): boolean => {
   return (
     BigInt(o.price) > 0 &&
     BigInt(o.end) > BigInt(o.start) &&
-    BigInt(o.start) >= Date.now() &&
+    BigInt(o.end) >= Date.now() &&
     o.actor !== zeroAddress
   )
 }
