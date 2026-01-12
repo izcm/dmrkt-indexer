@@ -1,4 +1,4 @@
-import { encodeAbiParameters, keccak256, numberToBytes, toBytes } from 'viem'
+import { encodeAbiParameters, keccak256, numberToBytes, toBytes, zeroAddress } from 'viem'
 
 export type Order = {
   actor: `0x${string}`
@@ -17,6 +17,15 @@ export type Order = {
     s: string
     v: number
   }
+}
+
+export const validOrder = (o: Order): boolean => {
+  return (
+    BigInt(o.price) > 0 &&
+    BigInt(o.end) > BigInt(o.start) &&
+    BigInt(o.start) >= Date.now() &&
+    o.actor !== zeroAddress
+  )
 }
 
 export const hashOrder = (o: Order): `0x${string}` => {

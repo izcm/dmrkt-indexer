@@ -1,6 +1,6 @@
 import { parseAbi } from 'viem'
 
-import { publicClient as client } from '#app/client'
+import { publicClient as client } from '#app/client.js'
 
 import { handleSettlement } from './settlements/handler.js'
 import { ListenerItem } from './types/context.js'
@@ -35,4 +35,5 @@ const routeLog = (envelope: ListenerItem) => {
   handler(envelope)
 }
 
-console.log(`Listening to ${target}...`)
+console.log(`🔔 Event listener started`)
+console.log(`👁️  Watching contract: ${target}`)

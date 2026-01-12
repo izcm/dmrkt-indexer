@@ -8,7 +8,13 @@ import './listeners/listener.js'
 import { start } from './server.js'
 
 async function main() {
+  console.log('🚀 Starting DMrkt Indexer...')
+
+  console.log('📦 Initializing database connection...')
   await initDb()
+  console.log('✅ Database connected')
+
+  console.log('🌐 Starting API server...')
   await start()
 }
 

@@ -1,21 +1,22 @@
-import { mongodb } from '@fastify/mongodb'
 import { FastifyInstance, RouteShorthandOptions } from 'fastify'
 
-// schemas
-import { byIdParams } from '#app/schemas/shared'
+import { COLLECTIONS } from '#app/data/constants/db.js'
+import { DEFAULT_PAGE_LIMIT } from '#app/data/constants/api.js'
+import { ADDR_REGEX } from '#app/data/constants/regex.js'
+
+import { byIdParams } from '#app/schemas/shared.js'
 
 export const settlementsQuery = (fastify: FastifyInstance) => {
-  const dbCollection = fastify.mongo.db?.collection('settlements')
+  const dbSettlements = fastify.mongo.db?.collection(COLLECTIONS.SETTLEMENTS)
   const { ObjectId } = fastify.mongo
 
-  if (!dbCollection) throw new Error('Could not find db settlements')
-  const addrRegex = '^0x[a-fA-F0-9]{40}$'
+  if (!dbSettlements) throw new Error('Could not find db settlements')
 
   fastify.get<{ Params: { id: string } }>(
     '/:id',
     { schema: { params: byIdParams } },
     async (req, res) => {
-      const doc = await dbCollection.findOne({ _id: new ObjectId(req.params.id) })
+      const doc = await dbSettlements.findOne({ _id: new ObjectId(req.params.id) })
 
       if (!doc) {
         res.code(404)
@@ -34,10 +35,10 @@ export const settlementsQuery = (fastify: FastifyInstance) => {
           type: 'object',
           additionalProperties: false,
           properties: {
-            collection: { type: 'string', pattern: addrRegex },
+            collection: { type: 'string', pattern: ADDR_REGEX },
             tokenId: { type: 'string', pattern: '^[0-9]+$' },
-            seller: { type: 'string', pattern: addrRegex },
-            buyer: { type: 'string', pattern: addrRegex },
+            seller: { type: 'string', pattern: ADDR_REGEX },
+            buyer: { type: 'string', pattern: ADDR_REGEX },
             from: { type: 'integer', minimum: 0 }, // timestamp
             to: { type: 'integer', minimum: 0 }, // timestamp
             limit: { type: 'integer', minimum: 1, maximum: 100 },
@@ -68,10 +69,10 @@ export const settlementsQuery = (fastify: FastifyInstance) => {
         ]
       }
 
-      return dbCollection
+      return dbSettlements
         .find(query)
         .sort({ 'block.timestamp': -1, _id: -1 })
-        .limit(limit ?? 50)
+        .limit(limit ?? DEFAULT_PAGE_LIMIT)
         .toArray()
     }
   )

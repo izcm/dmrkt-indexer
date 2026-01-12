@@ -1,9 +1,9 @@
-const addrRegex = '^0x[a-fA-F0-9]{40}$'
+import { ADDR_REGEX } from '#app/data/constants/regex.js'
 
 export const orderQueryableFields = {
-  actor: { type: 'string', pattern: addrRegex },
-  collection: { type: 'string', pattern: addrRegex },
-  currency: { type: 'string', pattern: addrRegex },
+  actor: { type: 'string', pattern: ADDR_REGEX },
+  collection: { type: 'string', pattern: ADDR_REGEX },
+  currency: { type: 'string', pattern: ADDR_REGEX },
   price: { type: 'string' },
   nonce: { type: 'string' },
   side: { type: 'integer', minimum: 0 },

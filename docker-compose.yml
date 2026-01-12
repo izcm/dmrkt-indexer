@@ -5,3 +5,4 @@ services:
     container_name: dmrkt-mongo
     ports:
       - '27017:27017'
+# volumes + auto delete + script for setting mongodb indexes

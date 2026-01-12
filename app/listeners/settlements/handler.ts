@@ -5,7 +5,7 @@ import { SettlementLog } from '../types/logs.js'
 import { ListenerItem } from '../types/context.js'
 
 // domain types
-import { Settlement } from '../../domain/settlement.js'
+import { Settlement } from '#app/data/domain/settlement.js'
 
 export function handleSettlement(item: ListenerItem) {
   const settlement = normalize(item.log)

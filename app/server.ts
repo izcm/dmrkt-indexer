@@ -2,10 +2,10 @@ import Fastify from 'fastify'
 
 import { dbConnector } from './db/mongo.fastify.js'
 
-// api routes - ORDERS
+// api routes - SETTLEMENTS
 import { settlementsQuery } from './api/settlements/query.js'
 
-// api routes - SETTLEMENTS
+// api routes - ORDERS
 import { ordersIngest } from './api/orders/ingest.js'
 import { ordersQuery } from './api/orders/query.js'
 

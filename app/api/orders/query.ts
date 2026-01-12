@@ -1,12 +1,13 @@
-import { mongodb } from '@fastify/mongodb'
 import { FastifyInstance } from 'fastify'
 
-// schema validation
-import { byIdParams, paginationQueryParams } from '#app/schemas/shared'
-import { orderQueryableFields } from '#app/schemas/order'
+import { COLLECTIONS } from '#app/data/constants/db.js'
+import { DEFAULT_PAGE_LIMIT } from '#app/data/constants/api.js'
+
+import { byIdParams, paginationQueryParams } from '#app/schemas/shared.js'
+import { orderQueryableFields } from '#app/schemas/order.js'
 
 export const ordersQuery = (fastify: FastifyInstance) => {
-  const dbCollection = fastify.mongo.db?.collection('orders')
+  const dbCollection = fastify.mongo.db?.collection(COLLECTIONS.ORDERS)
   const { ObjectId } = fastify.mongo
 
   if (!dbCollection) throw new Error('Could not find db orders')
@@ -47,7 +48,7 @@ export const ordersQuery = (fastify: FastifyInstance) => {
 
       return dbCollection
         .find(query)
-        .limit(limit ?? 50)
+        .limit(limit ?? DEFAULT_PAGE_LIMIT)
         .toArray()
     }
   )
