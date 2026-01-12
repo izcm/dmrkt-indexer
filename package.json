@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon --exec node --loader ts-node/esm app/index.ts",
+    "dev": "nodemon --exec node --conditions=dev --loader ts-node/esm app/index.ts",
     "build": "tsc",
-    "start": "node dist/app/index.js",
+    "start": "node --conditions=prod dist/app/index.js",
     "fmt": "prettier --write .",
     "prepare": "husky"
   },
@@ -36,7 +36,9 @@
   },
   "config": {},
   "imports": {
-    "#app/*": "./app/*",
-    "#app__/*": "./dist/app/*"
+    "#app/*": {
+      "dev": "./app/*",
+      "prod": "./dist/app/*"
+    }
   }
 }
