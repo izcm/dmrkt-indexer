@@ -6,7 +6,7 @@ Content-Type: application/json
   "actor": "0x31F1a4B4f9f7CAD3f21bF9F2c3840C5CcF7B85b9",
   "collection": "0x6FE69253967982531bDe0C06476e7fe427f3F56c",
   "currency": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-  "end": 1766454279,
+  "end": 1868226791,
   "isCollectionBid": false,
   "nonce": "1",
   "price": "100000000000000000",

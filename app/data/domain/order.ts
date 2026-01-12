@@ -20,10 +20,15 @@ export type Order = {
 }
 
 export const validOrder = (o: Order): boolean => {
+  console.log(`price valid: ${BigInt(o.price) > 0}`)
+  console.log(`time window: ${BigInt(o.end) > BigInt(o.start)}`)
+  console.log(`end valid: ${BigInt(o.end) >= Date.now()}`)
+  console.log(`actor valid: ${o.actor !== zeroAddress}`)
+
   return (
     BigInt(o.price) > 0 &&
     BigInt(o.end) > BigInt(o.start) &&
-    BigInt(o.end) >= Date.now() &&
+    BigInt(o.end) >= Math.floor(Date.now() / 1000) &&
     o.actor !== zeroAddress
   )
 }

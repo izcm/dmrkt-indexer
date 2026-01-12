@@ -17,6 +17,7 @@ export const ordersIngest = (fastify: FastifyInstance) => {
     { schema: { body: { $ref: 'order-create#' } } },
     async (req, res) => {
       if (!validOrder(req.body as Order)) {
+        console.log('FUCK EVERYTHING')
         res.code(400)
         return API_ERRORS.INVALID_ORDER
       }

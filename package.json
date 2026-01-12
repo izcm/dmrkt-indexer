@@ -34,7 +34,9 @@
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
   },
+  "config": {},
   "imports": {
-    "#app/*": "./dist/app/*"
+    "#app/*": "./app/*",
+    "#app__/*": "./dist/app/*"
   }
 }
