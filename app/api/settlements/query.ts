@@ -63,17 +63,35 @@ export const settlementsQuery = (fastify: FastifyInstance) => {
       if (cursor) {
         const [ts, id] = cursor.split('_')
 
-        query.$or = [
-          { 'block.timestamp': { $lt: Number(ts) } },
-          { 'block.timestamp': Number(ts), _id: { $lt: new ObjectId(id as string) } },
+        query.$and = [
+          {
+            $or: [
+              { 'block.timestamp': { $lt: Number(ts) } },
+              { 'block.timestamp': Number(ts), _id: { $lt: new ObjectId(id as string) } },
+            ],
+          },
         ]
       }
 
-      return dbSettlements
+      const pageLimit = limit ?? DEFAULT_PAGE_LIMIT
+
+      const docs = await dbSettlements
         .find(query)
         .sort({ 'block.timestamp': -1, _id: -1 })
-        .limit(limit ?? DEFAULT_PAGE_LIMIT)
+        .limit(pageLimit + 1)
         .toArray()
+
+      let nextCursor: string | null = null
+
+      if (docs.length > pageLimit) {
+        const last = docs[pageLimit - 1]
+        nextCursor = `${last.block.timestamp}_${last._id.toString()}`
+      }
+
+      return {
+        items: docs.slice(0, pageLimit),
+        nextCursor,
+      }
     }
   )
 }

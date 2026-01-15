@@ -5,7 +5,7 @@ import { publicClient as client } from '#app/client.js'
 import { handleSettlement } from './settlements/handler.js'
 import { ListenerItem } from './types/context.js'
 
-const target = '0xc80F9dA34212736BE29fcF9eD26B5951DDcc62Bb'
+const target = '0xa40E009b306B3b4f27374f6e833291DaAeC88cc6'
 
 export const unwatch = client.watchEvent({
   address: target,

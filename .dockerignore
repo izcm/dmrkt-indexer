@@ -1,9 +1,21 @@
+# dockerignore
+
+# artifacts
+
 node_modules
+\*.log
+
+# version control
+
 .git
 .gitignore
+
+# dev notes / docs
+
 README.md
 notes
+
+# dev tools
+
 http
-scripts
-docker-compose.yml 
-\*.log
+docker-compose.yml
