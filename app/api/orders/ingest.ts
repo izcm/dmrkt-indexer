@@ -1,9 +1,9 @@
 import { FastifyInstance } from 'fastify'
 
-import { COLLECTIONS } from '#app/data/constants/db.js'
-import { API_ERRORS } from '#app/data/constants/api.js'
+import { COLLECTIONS } from '#app/domain/constants/db.js'
+import { API_ERRORS } from '#app/domain/constants/api.js'
 
-import { Order, hashOrder, validOrder } from '#app/data/domain/order.js'
+import { Order, hashOrder, validOrder } from '#app/domain/types/order.js'
 
 // TODO: index orderhash on `order_status`
 export const ordersIngest = (fastify: FastifyInstance) => {

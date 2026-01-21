@@ -1,7 +1,7 @@
 import { FastifyInstance } from 'fastify'
 
-import { COLLECTIONS } from '#app/data/constants/db.js'
-import { DEFAULT_PAGE_LIMIT } from '#app/data/constants/api.js'
+import { COLLECTIONS } from '#app/domain/constants/db.js'
+import { DEFAULT_PAGE_LIMIT } from '#app/domain/constants/api.js'
 
 import { byIdParams, paginationQueryParams } from '#app/schemas/shared.js'
 import { orderQueryableFields } from '#app/schemas/order.js'

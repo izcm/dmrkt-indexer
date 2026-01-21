@@ -1,4 +1,4 @@
-import { ADDR_REGEX } from '#app/data/constants/regex.js'
+import { ADDR_REGEX } from '#app/domain/constants/regex.js'
 
 export const orderQueryableFields = {
   actor: { type: 'string', pattern: ADDR_REGEX },

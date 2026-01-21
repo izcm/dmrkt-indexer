@@ -5,7 +5,7 @@ import { SettlementLog } from '../types/logs.js'
 import { ListenerItem } from '../types/context.js'
 
 // domain types
-import { Settlement } from '#app/data/domain/settlement.js'
+import { Settlement } from '#app/domain/types/settlement.js'
 
 export function handleSettlement(item: ListenerItem) {
   const settlement = normalize(item.log)
@@ -25,6 +25,7 @@ const normalize = (log: SettlementLog): Settlement => {
     priceWei: args.price.toString(),
     txHash: log.transactionHash,
     block: {
+      chainId: 1337, // todo: dont hardcode this
       number: Number(log.blockNumber),
       timestamp: Number(log.blockTimestamp),
       logIndex: Number(log.logIndex),

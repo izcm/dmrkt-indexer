@@ -1,8 +1,8 @@
 import { FastifyInstance, RouteShorthandOptions } from 'fastify'
 
-import { COLLECTIONS } from '#app/data/constants/db.js'
-import { DEFAULT_PAGE_LIMIT } from '#app/data/constants/api.js'
-import { ADDR_REGEX } from '#app/data/constants/regex.js'
+import { COLLECTIONS } from '#app/domain/constants/db.js'
+import { DEFAULT_PAGE_LIMIT } from '#app/domain/constants/api.js'
+import { ADDR_REGEX } from '#app/domain/constants/regex.js'
 
 import { byIdParams } from '#app/schemas/shared.js'
 

@@ -1,9 +1,10 @@
-import { encodeAbiParameters, keccak256, numberToBytes, toBytes, zeroAddress } from 'viem'
+import { encodeAbiParameters, keccak256, toBytes, zeroAddress } from 'viem'
+import { Hex32 } from '#app/utils/format/hex32.js'
 
 export type Order = {
-  actor: `0x${string}`
-  collection: `0x${string}`
-  currency: `0x${string}`
+  actor: Hex32
+  collection: Hex32
+  currency: Hex32
   price: string
   nonce: string
   side: number
@@ -33,7 +34,7 @@ export const validOrder = (o: Order): boolean => {
   )
 }
 
-export const hashOrder = (o: Order): `0x${string}` => {
+export const hashOrder = (o: Order): Hex32 => {
   const encoded = encodeAbiParameters(
     [
       { type: 'bytes32' },

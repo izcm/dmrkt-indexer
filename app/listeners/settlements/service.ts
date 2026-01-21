@@ -1,10 +1,10 @@
 import { getDb } from '#app/db/mongo.client.js'
 
 // types
-import { Settlement } from '#app/data/domain/settlement.js'
+import { Settlement } from '#app/domain/types/settlement.js'
 import { IngestionContext } from '../types/context.js'
 
-import { COLLECTIONS } from '#app/data/constants/db.js'
+import { COLLECTIONS } from '#app/domain/constants/db.js'
 
 export const persist = async (settlement: Settlement, ingestion: IngestionContext) => {
   const db = getDb()
