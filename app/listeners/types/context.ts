@@ -1,6 +1,6 @@
 // === SHARED METADATA WRAPPERS ===
 
-import { Hex32 } from '#app/utils/format/hex32.js'
+import { Hex } from '#app/utils/format/hex.js'
 
 export type ListenerItem = {
   log: any // decoded viem log
@@ -17,17 +17,13 @@ export type BlockRef = {
   number: number // monotonic counter => safely store as js number
   timestamp: number // UNIX timestamp
   logIndex: number // safe cast
-  proposer?: Hex32
 }
 
-export type TxRef = {
-  hash: Hex32
+export type TxContext = {
   index: number
-}
-
-export type TxMeta = {
   gasUsed: string
   effectiveGasPrice: string
-  functionSelector: string
+  functionSelector: `0x${string}`
   functionName: string
+  contractAddress: Hex | null
 }

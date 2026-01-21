@@ -1,18 +1,18 @@
-import { Hex32 } from '#app/utils/format/hex32.js'
+import { Hex } from '#app/utils/format/hex.js'
 
 export type SettlementLog = {
   eventName: 'Settlement'
   args: {
-    orderHash: Hex32
-    collection: Hex32
+    orderHash: Hex
+    collection: Hex
     tokenId: bigint
-    seller: Hex32
-    buyer: Hex32
-    currency: Hex32
+    seller: Hex
+    buyer: Hex
+    currency: Hex
     price: bigint
   }
   blockNumber: bigint
   blockTimestamp: bigint
-  transactionHash: Hex32
+  transactionHash: Hex
   logIndex: bigint
 }

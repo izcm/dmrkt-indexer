@@ -1,24 +1,78 @@
-import oeAbi from '@a2zb/packages/abis/dmrkt/OrderEngine.json' with { type: 'json' }
+import json from '@a2zb/packages/abis/dmrkt/OrderEngine.json' with { type: 'json' }
 
-import { toFunctionSelector, recoverPublicKey } from 'viem'
+import { toFunctionSelector, recoverPublicKey, decodeFunctionData, Abi, AbiFunction } from 'viem'
 
 import { publicClient as client } from '#app/client.js'
+import { Hex } from '#app/utils/format/hex.js'
 
-import { SettlementMeta } from '#app/domain/types/settlement.js'
-import { Hex32 } from '#app/utils/format/hex32.js'
+import { TxContext } from './types/context.js'
 
 const RPC_URL = process.env.RPC_URL
 
 //export const txMeta = async <T>(txHash: Hex32, normalize: () => T) => {
 
-export const txMeta = async (txHash: Hex32) => {
+export const txMeta = async (txHash: Hex) => {
   const tx = await client.getTransaction({ hash: txHash })
   const receipt = await client.getTransactionReceipt({ hash: txHash })
 
-  // tmp settlement logic specific => later todo: pass normalize function to generalize
+  const abi = json.abi as Abi
 
+  const abiFunctionMatch = abi.find(
+    (x): x is AbiFunction =>
+      x.type === 'function' && toFunctionSelector(x) === (tx.input.slice(0, 10) as `0x${string}`)
+  )
+
+  if (!abiFunctionMatch) {
+    throw new Error('No ABI function match for tx function selector')
+  }
+
+  if (!tx.to) {
+    throw new Error('Unexpected contract creation tx')
+  }
+
+  const txCtx: TxContext = {
+    index: tx.transactionIndex,
+    gasUsed: receipt.gasUsed.toString(),
+    effectiveGasPrice: receipt.effectiveGasPrice.toString(),
+    functionSelector: tx.input.slice(0, 10) as `0x${string}`,
+    functionName: abiFunctionMatch.name,
+    contractAddress: tx.to,
+  }
+
+  // tmp settlement logic specific => later todo: pass normalize function to generalize
+  //const { functionName } = decodeFunctionData({ abi: json.abi, data: tx.input })
   // const meta: SettlementMeta = {
-  //   side:
+  //  side: ;
+  //  gasUsed: receipt.gasUsed;
+  //  effectiveGasPrice:
+  //
+  // }
+
+  // const tx: {
+  //     nonce: number;
+  //     v: bigint;
+  //     r: `0x${string}`;
+  //     s: `0x${string}`;
+  //     type: "legacy";
+  //     yParity?: undefined;
+  //     from: `0x${string}`;
+  //     gas: bigint;
+  //     hash: `0x${string}`;
+  //     input: `0x${string}`;
+  //     to: `0x${string}` | null;
+  //     typeHex: `0x${string}` | null;
+  //     value: bigint;
+  //     accessList?: undefined;
+  //     authorizationList?: undefined;
+  //     blobVersionedHashes?: undefined;
+  //     chainId?: number | undefined;
+  //     gasPrice: bigint;
+  //     maxFeePerBlobGas?: undefined;
+  //     maxFeePerGas?: undefined;
+  //     maxPriorityFeePerGas?: undefined;
+  //     blockHash: `0x${string}`;
+  //     blockNumber: bigint;
+  //     transactionIndex: number;
   // }
 
   //  const receipt: {

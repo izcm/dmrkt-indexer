@@ -1,6 +1,6 @@
 import { persist } from './service.js'
 
-// types
+// context types
 import { SettlementLog } from '../types/logs.js'
 import { ListenerItem } from '../types/context.js'
 
