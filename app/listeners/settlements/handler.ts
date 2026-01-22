@@ -1,61 +1,25 @@
-import { save, updateWithMeta } from './service.js'
-import { getTxMeta } from '../tx-meta.service.js'
+import json from '@a2zb/packages/abis/dmrkt/OrderEngine.json' with { type: 'json' }
 
-// context types
-import { SettlementLog } from '../types/logs.js'
-import { ListenerItem, TxContext } from '../types/context.js'
+import type { Abi, Hex } from 'viem'
 
-// domain types
-import { Settlement, SettlementMeta } from '#app/domain/types/settlement.js'
-import { Hex } from 'viem'
+// db and rpc stuff
+import { save, updateWithMeta } from '../../repos/settlement.repo.js'
+import { getTxMeta } from '../../rpc/tx-meta.js'
+
+import { ListenerItem } from '../types/context.js'
+
+// pure methods
+import { settlementFromLog, settlementMetaFromTx } from './logic.js'
 
 export function handle(item: ListenerItem) {
-  const settlement = toSettlement(item.log, item.chainId)
+  const settlement = settlementFromLog(item.log, item.chainId)
   save(settlement)
 
   void enrich(item.log.transactionHash)
 }
 
 const enrich = async (txHash: Hex) => {
-  const txCtx = await getTxMeta(txHash)
-
-  const meta = toSettlementMeta(txCtx)
+  const { receipt, tx } = await getTxMeta(txHash)
+  const meta = await settlementMetaFromTx(tx, receipt, json.abi as Abi)
   await updateWithMeta(txHash, meta)
-}
-
-const toSettlement = (log: SettlementLog, chainId: number): Settlement => {
-  const { args } = log
-
-  return {
-    orderHash: args.orderHash,
-    collection: args.collection,
-    tokenId: args.tokenId.toString(),
-    seller: args.seller,
-    buyer: args.buyer,
-    currency: args.currency,
-    priceWei: args.price.toString(),
-
-    execution: {
-      chainId: chainId,
-      logIndex: Number(log.logIndex),
-      txHash: log.transactionHash,
-
-      block: {
-        number: Number(log.blockTimestamp),
-        timestamp: Number(log.blockNumber),
-      },
-    },
-
-    ingestedAt: Date.now(),
-  }
-}
-
-const toSettlementMeta = (txCtx: TxContext): SettlementMeta => {
-  return {
-    order: {
-      side: 'ASK',
-      signer: '0xfe',
-    },
-    txContext: txCtx,
-  }
 }

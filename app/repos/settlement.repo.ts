@@ -20,6 +20,7 @@ export const save = async (settlement: Settlement) => {
     ),
     db.collection(COLLECTIONS.SETTLEMENTS).insertOne({
       ...settlement,
+      ingestedAt: Date.now(),
     }),
   ])
 }

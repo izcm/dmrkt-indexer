@@ -1,5 +1,14 @@
+import { getAssetKeys } from 'node:sea'
 import { encodeAbiParameters, keccak256, toBytes, zeroAddress } from 'viem'
 import type { Hex } from 'viem'
+
+export enum Side {
+  ASK,
+  BID,
+  COLLECTION_BID,
+}
+
+export type SideLabel = keyof typeof Side
 
 export type Order = {
   actor: Hex
@@ -20,12 +29,10 @@ export type Order = {
   }
 }
 
-export const validOrder = (o: Order): boolean => {
-  console.log(`price valid: ${BigInt(o.price) > 0}`)
-  console.log(`time window: ${BigInt(o.end) > BigInt(o.start)}`)
-  console.log(`end valid: ${BigInt(o.end) >= Date.now()}`)
-  console.log(`actor valid: ${o.actor !== zeroAddress}`)
+export type OrderCore = Omit<Order, 'signature'>
+export type OrderSignature = Order['signature']
 
+export const validOrder = (o: Order): boolean => {
   return (
     BigInt(o.price) > 0 &&
     BigInt(o.end) > BigInt(o.start) &&
@@ -34,7 +41,7 @@ export const validOrder = (o: Order): boolean => {
   )
 }
 
-export const hashOrder = (o: Order): Hex => {
+export const hashOrder = (o: OrderCore): Hex => {
   const encoded = encodeAbiParameters(
     [
       { type: 'bytes32' },

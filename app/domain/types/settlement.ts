@@ -1,6 +1,8 @@
 import { BlockTime, TxContext } from '#app/listeners/types/context.js'
 import type { Hex } from 'viem'
 
+import { SideLabel } from './order.js'
+
 export type Settlement = {
   orderHash: string
   collection: Hex
@@ -25,8 +27,8 @@ export type Settlement = {
 
 export type SettlementMeta = {
   order: {
-    side: 'ASK' | 'BID' | 'COLLECTION_BID'
-    signer: Hex // if isEip1271 ? getSignerFromSignatureIGuess???
+    side: SideLabel
+    signer: Hex
   }
   txContext: TxContext
 }

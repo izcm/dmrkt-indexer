@@ -17,18 +17,24 @@ export const ordersIngest = (fastify: FastifyInstance) => {
     { schema: { body: { $ref: 'order-create#' } } },
     async (req, res) => {
       if (!validOrder(req.body as Order)) {
-        console.log('FUCK EVERYTHING')
         res.code(400)
         return API_ERRORS.INVALID_ORDER
       }
 
-      const { insertedId } = await dbOrders.insertOne(req.body)
+      const order = req.body as Order
+
+      const { signature, ...orderCore } = order
 
       // create order_state
       await dbOrderStates.insertOne({
-        orderHash: hashOrder(req.body as Order),
+        orderHash: hashOrder(orderCore),
         status: 'active',
         updatedAt: Date.now(),
+      })
+
+      const { insertedId } = await dbOrders.insertOne({
+        ...orderCore,
+        signature,
       })
 
       res.code(201).header('Location', `/api/orders/${insertedId}`)
