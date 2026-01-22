@@ -1,4 +1,4 @@
-import { Hex } from '#app/utils/format/hex.js'
+import type { Hex } from 'viem'
 
 export type SettlementLog = {
   eventName: 'Settlement'

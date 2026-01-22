@@ -1,22 +1,15 @@
 // === SHARED METADATA WRAPPERS ===
 
-import { Hex } from '#app/utils/format/hex.js'
+import type { Hex } from 'viem'
 
 export type ListenerItem = {
   log: any // decoded viem log
-  ingestion: IngestionContext
+  chainId: number
 }
 
-export type IngestionContext = {
-  chainId: number
-  ingestedAt: number
-}
-
-export type BlockRef = {
-  chainId: number
-  number: number // monotonic counter => safely store as js number
-  timestamp: number // UNIX timestamp
-  logIndex: number // safe cast
+export type BlockTime = {
+  number: number
+  timestamp: number
 }
 
 export type TxContext = {

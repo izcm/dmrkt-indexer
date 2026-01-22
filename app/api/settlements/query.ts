@@ -52,10 +52,12 @@ export const settlementsQuery = (fastify: FastifyInstance) => {
 
       const query = Object.fromEntries(Object.entries(filters).filter(([, v]) => v !== undefined))
 
+      const blockTs = 'execution.block.timestamp'
+
       if (from || to) {
-        query['block.timestamp'] = {}
-        if (from) query['block.timestamp'].$gte = from
-        if (to) query['block.timestamp'].$lte = to
+        query[blockTs] = {}
+        if (from) query[blockTs].$gte = from
+        if (to) query[blockTs].$lte = to
       }
 
       // from / to + cursor can conflict (timestamp collision) which then returns an empty set
@@ -66,8 +68,8 @@ export const settlementsQuery = (fastify: FastifyInstance) => {
         query.$and = [
           {
             $or: [
-              { 'block.timestamp': { $lt: Number(ts) } },
-              { 'block.timestamp': Number(ts), _id: { $lt: new ObjectId(id as string) } },
+              { blockTs: { $lt: Number(ts) } },
+              { blockTs: Number(ts), _id: { $lt: new ObjectId(id as string) } },
             ],
           },
         ]
@@ -77,7 +79,7 @@ export const settlementsQuery = (fastify: FastifyInstance) => {
 
       const docs = await dbSettlements
         .find(query)
-        .sort({ 'block.timestamp': -1, _id: -1 })
+        .sort({ blockTs: -1, _id: -1 })
         .limit(pageLimit + 1)
         .toArray()
 
@@ -85,7 +87,7 @@ export const settlementsQuery = (fastify: FastifyInstance) => {
 
       if (docs.length > pageLimit) {
         const last = docs[pageLimit - 1]
-        nextCursor = `${last.block.timestamp}_${last._id.toString()}`
+        nextCursor = `${last.execution.block.timestamp}_${last._id.toString()}`
       }
 
       return {

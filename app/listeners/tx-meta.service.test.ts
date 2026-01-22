@@ -1,14 +1,14 @@
 import { describe, it, vi } from 'vitest'
 
 // TODO: https://vitest.dev/config/ **define import aliases in vitest config**
-import { txMeta } from './tx-meta.service.js'
-import type { Hex } from '../utils/format/hex.js'
+import { getTxMeta } from './tx-meta.service.js'
+import type { Hex } from 'viem'
 
 describe('txMeta', () => {
   it('runs and logs stuff', async () => {
     const txHash = '0xe73f658430c76c5dcf1f2c0421f434bbdcc9641b034cdaf152f3af3d69291ef2' as Hex
 
-    const result = await txMeta(txHash)
+    const result = await getTxMeta(txHash)
 
     console.log('txMeta result:', result)
   })

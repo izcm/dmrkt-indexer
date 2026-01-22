@@ -1,5 +1,5 @@
-import { BlockRef, TxContext } from '#app/listeners/types/context.js'
-import { Hex } from '#app/utils/format/hex.js'
+import { BlockTime, TxContext } from '#app/listeners/types/context.js'
+import type { Hex } from 'viem'
 
 export type Settlement = {
   orderHash: string
@@ -9,13 +9,24 @@ export type Settlement = {
   buyer: Hex
   currency: Hex
   priceWei: string
-  txHash: string
 
-  block: BlockRef
+  orderMeta?: SettlementMeta['order']
 
-  meta?: {
-    side: 'ASK' | 'BID' | 'COLLECTION_BID'
-    orderSigner: Hex // if isEip1271 ? getSignerFromSignatureIGuess???
-    tx: TxContext
+  execution: {
+    chainId: number
+    logIndex: number
+    txHash: string
+    block: BlockTime
+    txContext?: SettlementMeta['txContext']
   }
+
+  ingestedAt: number
+}
+
+export type SettlementMeta = {
+  order: {
+    side: 'ASK' | 'BID' | 'COLLECTION_BID'
+    signer: Hex // if isEip1271 ? getSignerFromSignatureIGuess???
+  }
+  txContext: TxContext
 }

@@ -1,5 +1,5 @@
 import { encodeAbiParameters, keccak256, toBytes, zeroAddress } from 'viem'
-import { Hex } from '#app/utils/format/hex.js'
+import type { Hex } from 'viem'
 
 export type Order = {
   actor: Hex

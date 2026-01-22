@@ -1,12 +1,10 @@
+import { Hex } from 'viem'
 import { getDb } from '#app/db/mongo.client.js'
 
-// types
-import { Settlement } from '#app/domain/types/settlement.js'
-import { IngestionContext } from '../types/context.js'
-
+import type { Settlement, SettlementMeta } from '#app/domain/types/settlement.js'
 import { COLLECTIONS } from '#app/domain/constants/db.js'
 
-export const persist = async (settlement: Settlement, ingestion: IngestionContext) => {
+export const save = async (settlement: Settlement) => {
   const db = getDb()
 
   await Promise.all([
@@ -15,15 +13,27 @@ export const persist = async (settlement: Settlement, ingestion: IngestionContex
       {
         $set: {
           status: 'filled',
-          updatedAt: settlement.block.timestamp,
+          updatedAt: Date.now(),
         },
       },
       { upsert: true }
     ),
     db.collection(COLLECTIONS.SETTLEMENTS).insertOne({
       ...settlement,
-      chainId: ingestion.chainId,
-      ingestedAt: ingestion.ingestedAt,
     }),
   ])
+}
+
+export const updateWithMeta = async (txHash: Hex, meta: SettlementMeta) => {
+  const db = getDb()
+
+  db.collection(COLLECTIONS.SETTLEMENTS).updateOne(
+    { 'execution.txHash': txHash },
+    {
+      $set: {
+        orderMeta: meta['order'],
+        'execution.txContext': meta['txContext'],
+      },
+    }
+  )
 }

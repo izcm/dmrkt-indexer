@@ -2,7 +2,7 @@
 GET http://localhost:5000/api/settlements/695f5b4d9f2e2b0db8fb68810
 
 ###  List all 
-GET http://localhost:5000/api/settlements?limit=50&cursor=1766395957_6969a22be7283b502bf3914c
+GET http://localhost:5000/api/settlements?limit=50
 
 ### By seller
 GET http://localhost:5000/api/settlements?seller=0x31F1a4B4f9f7CAD3f21bF9F2c3840C5CcF7B85b9&limit=10
