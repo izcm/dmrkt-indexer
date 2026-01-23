@@ -22,6 +22,8 @@ export type Settlement = {
     txContext?: SettlementMeta['txContext']
   }
 
+  metaStatus: 'DONE' | 'PENDING' | 'FAILED'
+  metaError?: string
   ingestedAt: number
 }
 

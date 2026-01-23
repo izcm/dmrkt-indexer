@@ -1,8 +1,8 @@
 import { parseAbi } from 'viem'
 
-import { publicClient as client } from '#app/client.js'
+import { publicClient as client } from '#app/rpc/client.js'
 
-import { handle } from './settlements/handler.js'
+import { handle as handleSettlement } from './settlements/handler.js'
 import { ListenerItem } from './types/context.js'
 
 const target = '0xa40E009b306B3b4f27374f6e833291DaAeC88cc6'
@@ -24,7 +24,7 @@ export const unwatch = client.watchEvent({
 })
 
 const routers: Record<string, (item: ListenerItem) => void> = {
-  Settlement: handle,
+  Settlement: handleSettlement,
   // OrderCancelled: handleOrderCancelled,
 }
 

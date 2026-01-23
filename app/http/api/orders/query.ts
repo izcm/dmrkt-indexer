@@ -1,22 +1,19 @@
 import { FastifyInstance } from 'fastify'
+import { ObjectId } from 'mongodb'
 
-import { COLLECTIONS } from '#app/domain/constants/db.js'
 import { DEFAULT_PAGE_LIMIT } from '#app/domain/constants/api.js'
 
 import { byIdParams, paginationQueryParams } from '#app/schemas/shared.js'
 import { orderQueryableFields } from '#app/schemas/order.js'
 
+import { orderRepo as repo } from '#app/repos/order.repo.js'
+
 export const ordersQuery = (fastify: FastifyInstance) => {
-  const dbCollection = fastify.mongo.db?.collection(COLLECTIONS.ORDERS)
-  const { ObjectId } = fastify.mongo
-
-  if (!dbCollection) throw new Error('Could not find db orders')
-
   fastify.get<{ Params: { id: string } }>(
     '/:id',
     { schema: { params: byIdParams } },
     async (req, res) => {
-      const doc = await dbCollection?.findOne({ _id: new ObjectId(req.params.id) })
+      const doc = await repo.findById(new ObjectId(req.params.id))
 
       if (!doc) {
         res.code(404)
@@ -26,6 +23,10 @@ export const ordersQuery = (fastify: FastifyInstance) => {
       return doc
     }
   )
+
+  // ! NB !
+  // from / to + cursor can conflict (timestamp collision) which then returns an empty set
+  // callers are responsible for constructing sensible queries
 
   fastify.get(
     '/',
@@ -44,12 +45,7 @@ export const ordersQuery = (fastify: FastifyInstance) => {
     async req => {
       const { from, to, limit, cursor, ...filters } = req.query as Record<string, any>
 
-      const query = Object.fromEntries(Object.entries(filters).filter(([, v]) => v !== undefined))
-
-      return dbCollection
-        .find(query)
-        .limit(limit ?? DEFAULT_PAGE_LIMIT)
-        .toArray()
+      return repo.findPage({ filters, from, to, cursor, limit: limit ?? DEFAULT_PAGE_LIMIT })
     }
   )
 }

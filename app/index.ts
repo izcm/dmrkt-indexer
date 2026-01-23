@@ -1,21 +1,31 @@
 import 'dotenv/config'
 
+// db
+import { initDb } from './db/mongo.js'
+
 // listener
-import { initDb } from './db/mongo.client.js'
-import './listeners/listener.js'
+import './listeners/index.js'
 
 // api
-import { start } from './server.js'
+import { start as startServer } from './http/server.js'
+
+// workers
+import { start as startWorkers } from './workers/index.js'
 
 async function main() {
-  console.log('🚀 Starting DMrkt Indexer...')
+  console.log('---------------------------------')
+  console.log('booting up d | mrkt indexer...')
+  console.log('---------------------------------')
 
-  console.log('📦 Initializing database connection...')
+  console.log('initializing database connection...')
   await initDb()
-  console.log('✅ Database connected')
+  console.log('database connected ✔')
 
-  console.log('🌐 Starting API server...')
-  await start()
+  console.log('starting API server...')
+  await startServer()
+
+  console.log('starting background workers...')
+  startWorkers()
 }
 
 main().catch(err => {

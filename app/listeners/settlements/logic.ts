@@ -1,4 +1,4 @@
-import { toFunctionSelector, decodeFunctionData, recoverPublicKey, serializeSignature } from 'viem'
+import { toFunctionSelector, decodeFunctionData, recoverAddress, serializeSignature } from 'viem'
 import type { AbiFunction, Abi, Hex } from 'viem'
 
 // order types & methods
@@ -28,11 +28,12 @@ export const settlementFromLog = (log: SettlementLog, chainId: number): Settleme
       txHash: log.transactionHash,
 
       block: {
-        number: Number(log.blockTimestamp),
-        timestamp: Number(log.blockNumber),
+        number: Number(log.blockNumber),
+        timestamp: Number(log.blockTimestamp),
       },
     },
 
+    metaStatus: 'PENDING',
     ingestedAt: 0,
   }
 }
@@ -43,7 +44,7 @@ export const settlementMetaFromTx = async (
   abi: Abi
 ): Promise<SettlementMeta> => {
   if (!tx.to) {
-    throw new Error('Unexpected contract creation tx')
+    throw new Error('[settlement-meta] unexpected contract creation tx')
   }
 
   const selector = tx.input.slice(0, 10) as Hex
@@ -53,7 +54,7 @@ export const settlementMetaFromTx = async (
   )
 
   if (!fnMatch) {
-    throw new Error('No match: given abi has no match for tx function selector')
+    throw new Error('[settlement-meta] given abi has no match for tx function selector')
   }
 
   const { args } = decodeFunctionData({
@@ -62,18 +63,18 @@ export const settlementMetaFromTx = async (
   })
 
   if (!args) {
-    throw new Error('No args found when parsing tx.inputs')
+    throw new Error('[settlement-meta] no args found when parsing tx.inputs')
   }
 
   const [, order, sig] = args as [unknown, OrderCore, OrderSignature]
 
   if (!order || !sig) {
-    throw new Error('Malformed args: error parsing ORDER or SIGNATURE')
+    throw new Error('[settlement-meta] error parsing ORDER or SIGNATURE')
   }
 
   const oHash = hashOrder(order)
 
-  const signer = await recoverPublicKey({
+  const signer = await recoverAddress({
     hash: oHash,
     signature: serializeSignature({ r: sig.r as Hex, s: sig.s as Hex, v: BigInt(sig.v) }),
   })

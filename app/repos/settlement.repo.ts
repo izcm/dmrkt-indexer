@@ -1,40 +1,127 @@
 import { Hex } from 'viem'
-import { getDb } from '#app/db/mongo.client.js'
+import { ObjectId } from 'mongodb'
 
-import type { Settlement, SettlementMeta } from '#app/domain/types/settlement.js'
+import { getDb } from '#app/db/mongo.js'
+
 import { COLLECTIONS } from '#app/domain/constants/db.js'
 
-export const save = async (settlement: Settlement) => {
-  const db = getDb()
+import { Settlement, SettlementMeta } from '#app/domain/types/settlement.js'
+import { FindPageArgs } from '#app/repos/types.js'
 
-  await Promise.all([
-    db.collection(COLLECTIONS.ORDER_STATES).updateOne(
-      { orderHash: settlement.orderHash },
-      {
-        $set: {
-          status: 'filled',
-          updatedAt: Date.now(),
-        },
-      },
-      { upsert: true }
-    ),
-    db.collection(COLLECTIONS.SETTLEMENTS).insertOne({
-      ...settlement,
-      ingestedAt: Date.now(),
-    }),
-  ])
+// === helpers ===
+
+const dbSettlements = () => {
+  const db = getDb()
+  return db.collection(COLLECTIONS.SETTLEMENTS)
 }
 
-export const updateWithMeta = async (txHash: Hex, meta: SettlementMeta) => {
+const dbOrderStates = () => {
   const db = getDb()
+  return db.collection(COLLECTIONS.ORDER_STATES)
+}
 
-  db.collection(COLLECTIONS.SETTLEMENTS).updateOne(
-    { 'execution.txHash': txHash },
-    {
-      $set: {
-        orderMeta: meta['order'],
-        'execution.txContext': meta['txContext'],
-      },
+export const settlementRepo = {
+  // === read ===
+  async findById(id: ObjectId) {
+    return dbSettlements().findOne({ _id: id })
+  },
+
+  async findPage({ filters, from, to, cursor, limit }: FindPageArgs) {
+    const blockTs = 'execution.block.timestamp'
+    const query = { ...filters }
+
+    if (from || to) {
+      query[blockTs] = {}
+      if (from) query[blockTs].$gte = from
+      if (to) query[blockTs].$lte = to
     }
-  )
+
+    if (cursor) {
+      const [ts, id] = cursor.split('_')
+
+      query.$and = [
+        {
+          $or: [
+            { [blockTs]: { $lt: Number(ts) } },
+            { [blockTs]: Number(ts), _id: { $lt: new ObjectId(id as string) } },
+          ],
+        },
+      ]
+    }
+
+    const docs = await dbSettlements()
+      .find(query)
+      .sort({ [blockTs]: -1, _id: -1 })
+      .limit(limit + 1)
+      .toArray()
+
+    let nextCursor: string | null = null
+
+    if (docs.length > limit) {
+      const last = docs[limit - 1]
+      nextCursor = `${last.execution.block.timestamp}_${last._id.toString()}`
+    }
+
+    return {
+      items: docs.slice(0, limit),
+      nextCursor,
+    }
+  },
+
+  async findPendingMeta(limit: number) {
+    return dbSettlements().find({ metaStatus: 'PENDING' }).limit(limit).toArray()
+  },
+
+  // === write ===
+
+  async save(settlement: Settlement) {
+    await Promise.all([
+      dbOrderStates().updateOne(
+        { orderHash: settlement.orderHash },
+        {
+          $set: {
+            status: 'filled',
+            updatedAt: Date.now(),
+          },
+        },
+        { upsert: true }
+      ),
+      dbSettlements().insertOne({
+        ...settlement,
+        ingestedAt: Date.now(),
+      }),
+    ])
+  },
+
+  async updateWithMeta(txHash: Hex, meta: SettlementMeta) {
+    dbSettlements().updateOne(
+      { 'execution.txHash': txHash },
+      {
+        $set: {
+          orderMeta: meta['order'],
+          'execution.txContext': meta['txContext'],
+          metaStatus: 'DONE',
+        },
+      }
+    )
+  },
+
+  async markMetaDone(txHash: Hex, meta: SettlementMeta) {
+    await dbSettlements().updateOne(
+      { 'execution.txHash': txHash },
+      { $set: { orderMeta: meta.order, 'execution.txContext': meta.txContext, metaStatus: 'DONE' } }
+    )
+  },
+
+  async markMetaFailed(txHash: Hex, error: string) {
+    await dbSettlements().updateOne(
+      { 'execution.txHash': txHash },
+      {
+        $set: {
+          metaStatus: 'FAILED',
+          metaError: error,
+        },
+      }
+    )
+  },
 }

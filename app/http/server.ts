@@ -1,7 +1,5 @@
 import Fastify from 'fastify'
 
-import { dbConnector } from './db/mongo.fastify.js'
-
 // api routes - SETTLEMENTS
 import { settlementsQuery } from './api/settlements/query.js'
 
@@ -10,16 +8,13 @@ import { ordersIngest } from './api/orders/ingest.js'
 import { ordersQuery } from './api/orders/query.js'
 
 // schemas
-import { orderCreateBody } from './schemas/order.js'
+import { orderCreateBody } from '../schemas/order.js'
 
 const app = Fastify({
   logger: true,
 })
 
 export const start = async () => {
-  // infra plugins
-  await app.register(dbConnector)
-
   // register all defined bodies
   app.addSchema(orderCreateBody)
 

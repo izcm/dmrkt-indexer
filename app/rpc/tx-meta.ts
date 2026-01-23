@@ -1,6 +1,6 @@
 import { Hex } from 'viem'
 
-import { publicClient as client } from '#app/client.js'
+import { publicClient as client } from '#app/rpc/client.js'
 
 const RPC_URL = process.env.RPC_URL
 
