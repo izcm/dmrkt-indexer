@@ -14,7 +14,7 @@ describe('txMeta', () => {
   })
 })
 
-vi.mock('#app/client.js', () => {
+vi.mock('#app/rpc/client.js', () => {
   return {
     publicClient: {
       getTransaction: vi.fn(async () => ({

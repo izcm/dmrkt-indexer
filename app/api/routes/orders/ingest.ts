@@ -2,7 +2,8 @@ import { FastifyInstance } from 'fastify'
 
 import { API_ERRORS } from '#app/domain/constants/api.js'
 
-import { Order, hashOrder, validOrder } from '#app/domain/types/order.js'
+import { Order, validOrder } from '#app/domain/types/order.js'
+
 import { orderRepo as repo } from '#app/repos/order.repo.js'
 
 // TODO: index orderhash on `order_status`

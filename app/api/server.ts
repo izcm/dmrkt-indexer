@@ -1,11 +1,11 @@
 import Fastify from 'fastify'
 
 // api routes - SETTLEMENTS
-import { settlementsQuery } from './api/settlements/query.js'
+import { settlementsQuery } from './routes/settlements/query.js'
 
 // api routes - ORDERS
-import { ordersIngest } from './api/orders/ingest.js'
-import { ordersQuery } from './api/orders/query.js'
+import { ordersIngest } from './routes/orders/ingest.js'
+import { ordersQuery } from './routes/orders/query.js'
 
 // schemas
 import { orderCreateBody } from '../schemas/order.js'

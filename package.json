@@ -9,7 +9,8 @@
     "build": "tsc",
     "start": "node --conditions=prod dist/app/index.js",
     "fmt": "prettier --write .",
-    "prepare": "husky"
+    "prepare": "husky",
+    "clean": "rm -rf dist build && rm -rf .cache"
   },
   "lint-staged": {
     "**/*": "prettier --write --ignore-unknown"

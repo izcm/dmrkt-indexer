@@ -7,7 +7,7 @@ import { initDb } from './db/mongo.js'
 import './listeners/index.js'
 
 // api
-import { start as startServer } from './http/server.js'
+import { start as startServer } from './api/server.js'
 
 // workers
 import { start as startWorkers } from './workers/index.js'

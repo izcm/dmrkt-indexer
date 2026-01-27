@@ -1,4 +1,3 @@
-import { getAssetKeys } from 'node:sea'
 import { encodeAbiParameters, keccak256, toBytes, zeroAddress } from 'viem'
 import type { Hex } from 'viem'
 
@@ -11,37 +10,26 @@ export enum Side {
 export type SideLabel = keyof typeof Side
 
 export type Order = {
-  actor: Hex
+  side: number
+  isCollectionBid: boolean
   collection: Hex
+  tokenId: string
   currency: Hex
   price: string
-  nonce: string
-  side: number
+  actor: Hex
   // end & start = user input => don't cast to number
   start: string
   end: string
-  tokenId: string
-  isCollectionBid: boolean
+  nonce: string
+
   signature: {
-    r: string
-    s: string
+    r: Hex
+    s: Hex
     v: number
   }
 }
 
-export type OrderCore = Omit<Order, 'signature'>
-export type OrderSignature = Order['signature']
-
-export const validOrder = (o: Order): boolean => {
-  return (
-    BigInt(o.price) > 0 &&
-    BigInt(o.end) > BigInt(o.start) &&
-    BigInt(o.end) >= Math.floor(Date.now() / 1000) &&
-    o.actor !== zeroAddress
-  )
-}
-
-export const hashOrder = (o: OrderCore): Hex => {
+export const hashOrderStruct = (o: OrderCore): Hex => {
   const encoded = encodeAbiParameters(
     [
       { type: 'bytes32' },
@@ -80,3 +68,15 @@ const ORDER_TYPE_HASH = () =>
       'Order(uint8 side,bool isCollectionBid,address collection,uint256 tokenId,address currency,uint256 price,address actor,uint64 start,uint64 end,uint256 nonce)'
     )
   )
+
+export type OrderCore = Omit<Order, 'signature'>
+export type OrderSignature = Order['signature']
+
+export const validOrder = (o: Order): boolean => {
+  return (
+    BigInt(o.price) > 0 &&
+    BigInt(o.end) > BigInt(o.start) &&
+    BigInt(o.end) >= Math.floor(Date.now() / 1000) &&
+    o.actor !== zeroAddress
+  )
+}

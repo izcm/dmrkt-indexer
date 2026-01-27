@@ -1,9 +1,11 @@
 import { ObjectId } from 'mongodb'
 
-import { getDb } from '#app/db/mongo.js'
 import { COLLECTIONS } from '#app/domain/constants/db.js'
+
 import { FindPageArgs } from '#app/repos/types.js'
-import { hashOrder, Order } from '#app/domain/types/order.js'
+import { hashOrderStruct, Order } from '#app/domain/types/order.js'
+
+import { getDb } from '#app/db/mongo.js'
 
 const dbOrders = () => {
   const db = getDb()
@@ -15,6 +17,7 @@ const dbOrderStates = () => {
   return db.collection(COLLECTIONS.ORDER_STATES)
 }
 
+// TODO: dont use hashOrderStruct => use viem typedData functions or smth similar
 export const orderRepo = {
   // === read ===
   async findById(id: ObjectId) {
@@ -54,7 +57,7 @@ export const orderRepo = {
 
     // create order_state
     await dbOrderStates().insertOne({
-      orderHash: hashOrder(orderCore),
+      orderHash: hashOrderStruct(orderCore),
       status: 'active',
       updatedAt: Date.now(),
     })

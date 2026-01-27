@@ -1,14 +1,22 @@
-import { toFunctionSelector, decodeFunctionData, recoverAddress, serializeSignature } from 'viem'
+import {
+  toFunctionSelector,
+  decodeFunctionData,
+  serializeSignature,
+  recoverTypedDataAddress,
+  getAbiItem,
+} from 'viem'
 import type { AbiFunction, Abi, Hex } from 'viem'
 
 // order types & methods
-import { OrderCore, OrderSignature, Side, SideLabel, hashOrder } from '#app/domain/types/order.js'
+import { OrderCore, OrderSignature, Side, SideLabel } from '#app/domain/types/order.js'
 
 // context types
 import { SettlementLog } from '../types/logs.js'
 
 // domain types
 import { Settlement, SettlementMeta } from '#app/domain/types/settlement.js'
+
+import { dmrktDomain, dmrktTypes, toOrder712 } from '#app/utils/eip712/types.js'
 
 export const settlementFromLog = (log: SettlementLog, chainId: number): Settlement => {
   const { args } = log
@@ -49,6 +57,11 @@ export const settlementMetaFromTx = async (
 
   const selector = tx.input.slice(0, 10) as Hex
 
+  // const fnMatch = getAbiItem({
+  //   abi,
+  //   name: selector,
+  // }) as AbiFunction
+
   const fnMatch = abi.find(
     (x): x is AbiFunction => x.type === 'function' && toFunctionSelector(x) === selector
   )
@@ -72,11 +85,14 @@ export const settlementMetaFromTx = async (
     throw new Error('[settlement-meta] error parsing ORDER or SIGNATURE')
   }
 
-  const oHash = hashOrder(order)
+  const sigHex = serializeSignature({ r: sig.r as Hex, s: sig.s as Hex, v: BigInt(sig.v) })
 
-  const signer = await recoverAddress({
-    hash: oHash,
-    signature: serializeSignature({ r: sig.r as Hex, s: sig.s as Hex, v: BigInt(sig.v) }),
+  const signer = await recoverTypedDataAddress({
+    domain: dmrktDomain,
+    types: dmrktTypes,
+    primaryType: 'Order',
+    message: toOrder712(order),
+    signature: sigHex,
   })
 
   return {
