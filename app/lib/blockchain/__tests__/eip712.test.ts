@@ -1,12 +1,9 @@
 import { describe, expect, it, vi } from 'vitest'
 
-import { privateKeyToAccount } from 'viem/accounts'
-import { Abi, hashTypedData, Hex, recoverTypedDataAddress } from 'viem'
-
-import { dmrktDomain, toOrder712, dmrktTypes } from '#app/utils/eip712/types.js'
+import { dmrktDomain, toOrder712, dmrktTypes } from '#app/lib/blockchain/eip712.js'
 import { OrderCore } from '#app/domain/types/order.js'
 
-describe('eip712Utils', () => {
+describe('eip712 library', () => {
   it('toOrder712 converts correctly', () => {
     const o712 = toOrder712(order)
 

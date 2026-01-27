@@ -16,7 +16,7 @@ import { SettlementLog } from '../types/logs.js'
 // domain types
 import { Settlement, SettlementMeta } from '#app/domain/types/settlement.js'
 
-import { dmrktDomain, dmrktTypes, toOrder712 } from '#app/utils/eip712/types.js'
+import { dmrktDomain, dmrktTypes, toOrder712 } from '#app/lib/blockchain/eip712.js'
 
 export const settlementFromLog = (log: SettlementLog, chainId: number): Settlement => {
   const { args } = log
@@ -57,14 +57,10 @@ export const settlementMetaFromTx = async (
 
   const selector = tx.input.slice(0, 10) as Hex
 
-  // const fnMatch = getAbiItem({
-  //   abi,
-  //   name: selector,
-  // }) as AbiFunction
-
-  const fnMatch = abi.find(
-    (x): x is AbiFunction => x.type === 'function' && toFunctionSelector(x) === selector
-  )
+  const fnMatch = getAbiItem({
+    abi,
+    name: selector,
+  }) as AbiFunction
 
   if (!fnMatch) {
     throw new Error('[settlement-meta] given abi has no match for tx function selector')
