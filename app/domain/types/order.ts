@@ -76,7 +76,8 @@ export const validOrder = (o: Order): boolean => {
   return (
     BigInt(o.price) > 0 &&
     BigInt(o.end) > BigInt(o.start) &&
-    BigInt(o.end) >= Math.floor(Date.now() / 1000) &&
+    // commented out since the demo includes fork time-warping
+    // BigInt(o.end) >= Math.floor(Date.now() / 1000) &&
     o.actor !== zeroAddress
   )
 }

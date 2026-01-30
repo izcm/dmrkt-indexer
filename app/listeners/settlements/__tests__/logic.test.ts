@@ -7,7 +7,7 @@ import { privateKeyToAccount } from 'viem/accounts'
 import { Abi, encodeFunctionData, getAbiItem, Hex, parseSignature } from 'viem'
 
 import { SettlementLog } from '#app/listeners/types/logs.js'
-import { settlementFromLog, settlementMetaFromTx } from '../logic.js'
+import { settlementFromLog, settlementMetaFromTx } from '#app/listeners/settlements/logic.js'
 
 import { Side, SideLabel } from '#app/domain/types/order.js'
 
@@ -22,7 +22,7 @@ import {
   mockReceipt,
   mockFill,
   mockOrder,
-} from '#app/__test__/mocks/primitives.js'
+} from '#tests/mocks/primitives.js'
 
 describe('Settlement log => Settlement domain mapping', () => {
   it('creates a Settlement from a Settlement event log', () => {

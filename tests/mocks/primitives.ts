@@ -1,8 +1,9 @@
 import type { Hex } from 'viem'
-import type { OrderCore } from '#app/domain/types/order.js'
+
+import { OrderCore } from '#app/domain/types/order.js'
+import { SettlementLog } from '#app/listeners/types/logs.js'
 
 import { addrOf, bytes32, bytes32n, bytesOf } from '../helpers/hash.js'
-import { SettlementLog } from '#app/listeners/types/logs.js'
 
 /* -------------------------------------------------
    Primitive identities

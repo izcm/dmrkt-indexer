@@ -10,13 +10,10 @@
     "outDir": "dist",
     "baseUrl": ".",
     "paths": {
-      "#app/*": ["app/*"]
+      "#app/*": ["app/*"],
+      "#tests/*": ["tests/*"]
     }
   },
-  "ts-node": {
-    "esm": true,
-    "experimentalEsm": true
-  },
-  "include": ["app"],
+  "include": ["app", "tests"],
   "exclude": ["node_modules", "dist"]
 }
