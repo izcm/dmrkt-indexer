@@ -52,11 +52,14 @@ export const orderRepo = {
   },
 
   // === write ===
-  async save(order: Order) {
+
+  // TODO: make orderState.status depend on the timestamps of `order`
+  async save(order: Order, chainId: number) {
     const { signature, ...orderCore } = order
 
     // create order_state
     await dbOrderStates().insertOne({
+      chainId,
       orderHash: hashOrderStruct(orderCore),
       status: 'active',
       updatedAt: Date.now(),

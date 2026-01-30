@@ -8,18 +8,32 @@ import { orderRepo as repo } from '#app/repos/order.repo.js'
 
 // TODO: index orderhash on `order_status`
 export const ordersIngest = (fastify: FastifyInstance) => {
-  fastify.post<{ Body: Order }>(
+  fastify.post<{ Headers: { 'x-chain-id': number }; Body: Order }>(
     '/',
-    { schema: { body: { $ref: 'order-create#' } } },
+    {
+      schema: {
+        headers: {
+          type: 'object',
+          required: ['x-chain-id'],
+          properties: { 'x-chain-id': { type: 'number' } },
+        },
+        body: { $ref: 'order-create#' },
+      },
+    },
     async (req, res) => {
-      if (!validOrder(req.body as Order)) {
+      const order = req.body
+      const chainId = req.headers['x-chain-id']
+
+      if (!validOrder(order)) {
         res.code(400)
         return API_ERRORS.INVALID_ORDER
       }
 
-      const order = req.body as Order
+      // FOR ORDER STATE: SET CHAINID AS HEADER FIELD IN EACH REQ
+      // POST /api/orders
+      // X-Chain-Id: 1
 
-      const { insertedId } = await repo.save(order)
+      const { insertedId } = await repo.save(order, chainId)
 
       res.code(201).header('Location', `/api/orders/${insertedId}`)
 

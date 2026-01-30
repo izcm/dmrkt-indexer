@@ -28,7 +28,7 @@ export const settlementsQuery = (fastify: FastifyInstance) => {
   // from / to + cursor can conflict (timestamp collision) which then returns an empty set
   // callers are responsible for constructing sensible queries
 
-  fastify.get(
+  fastify.get<{ Querystring: Record<string, any> }>(
     '/',
     {
       schema: {
@@ -49,7 +49,7 @@ export const settlementsQuery = (fastify: FastifyInstance) => {
       },
     },
     async req => {
-      const { from, to, limit, cursor, ...filters } = req.query as Record<string, any>
+      const { from, to, limit, cursor, ...filters } = req.query
 
       return repo.findPage({
         filters,
