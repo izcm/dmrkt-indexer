@@ -58,7 +58,7 @@ describe('Settlement log => Settlement domain mapping', () => {
     expect(settlement.ingestedAt).toBe(0) // set in db
 
     // order? should be undefined
-    expect(settlement.orderMeta).toBeUndefined()
+    expect(settlement.orderAttributes).toBeUndefined()
   })
 })
 

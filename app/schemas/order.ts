@@ -1,4 +1,4 @@
-import { ADDR_REGEX } from '#app/domain/constants/regex.js'
+import { ADDR_REGEX, BYTES32_REGEX } from '#app/domain/constants/regex.js'
 
 export const orderQueryableFields = {
   actor: { type: 'string', pattern: ADDR_REGEX },
@@ -11,6 +11,11 @@ export const orderQueryableFields = {
   end: { type: 'integer', minimum: 0 },
   tokenId: { type: 'string' },
   isCollectionBid: { type: 'boolean' },
+
+  // order-state queryableFields
+  status: { enum: ['active', 'filled', 'cancelled', 'expired'] },
+  // chainId:
+  // orderHash: { type: 'string', pattern: BYTES32_REGEX },
 }
 
 export const orderCreateBody = {

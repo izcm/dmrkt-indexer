@@ -1,4 +1,4 @@
-type OrderStatus = 'active' | 'filled' | 'cancelled' | 'expired'
+export type OrderStatus = 'active' | 'filled' | 'cancelled' | 'expired'
 
 // if duplicate chainid + orderHash
 //  1. reused nonce => error

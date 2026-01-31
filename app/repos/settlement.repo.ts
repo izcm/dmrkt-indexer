@@ -8,16 +8,19 @@ import { COLLECTIONS } from '#app/domain/constants/db.js'
 import { Settlement, SettlementMeta } from '#app/domain/types/settlement.js'
 import { FindPageArgs } from '#app/repos/types.js'
 
+import { orderRepo } from './order.repo.js'
+import { OrderState } from '#app/domain/types/order-state.js'
+
 // === helpers ===
 
 const dbSettlements = () => {
   const db = getDb()
-  return db.collection(COLLECTIONS.SETTLEMENTS)
+  return db.collection<Settlement>(COLLECTIONS.SETTLEMENTS)
 }
 
 const dbOrderStates = () => {
   const db = getDb()
-  return db.collection(COLLECTIONS.ORDER_STATES)
+  return db.collection<OrderState>(COLLECTIONS.ORDER_STATES)
 }
 
 export const settlementRepo = {
@@ -75,6 +78,8 @@ export const settlementRepo = {
   // === write ===
 
   async save(settlement: Settlement) {
+    const { orderHash, execution } = settlement
+
     await Promise.all([
       dbOrderStates().updateOne(
         { orderHash: settlement.orderHash },
@@ -98,7 +103,7 @@ export const settlementRepo = {
       { 'execution.txHash': txHash },
       {
         $set: {
-          orderMeta: meta['order'],
+          orderAttributes: meta['order'],
           'execution.txContext': meta['txContext'],
           metaStatus: 'DONE',
         },
@@ -109,7 +114,13 @@ export const settlementRepo = {
   async markMetaDone(txHash: Hex, meta: SettlementMeta) {
     await dbSettlements().updateOne(
       { 'execution.txHash': txHash },
-      { $set: { orderMeta: meta.order, 'execution.txContext': meta.txContext, metaStatus: 'DONE' } }
+      {
+        $set: {
+          orderAttributes: meta.order,
+          'execution.txContext': meta.txContext,
+          metaStatus: 'DONE',
+        },
+      }
     )
   },
 

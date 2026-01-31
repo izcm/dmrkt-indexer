@@ -4,7 +4,7 @@ import type { Hex } from 'viem'
 import { SideLabel } from './order.js'
 
 export type Settlement = {
-  orderHash: string
+  orderHash: Hex
   collection: Hex
   tokenId: string
   seller: Hex
@@ -12,12 +12,12 @@ export type Settlement = {
   currency: Hex
   priceWei: string
 
-  orderMeta?: SettlementMeta['order']
+  orderAttributes?: SettlementMeta['order']
 
   execution: {
     chainId: number
     logIndex: number
-    txHash: string
+    txHash: Hex
     block: BlockTime
     txContext?: SettlementMeta['txContext']
   }

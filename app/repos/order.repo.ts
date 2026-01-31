@@ -3,18 +3,20 @@ import { ObjectId } from 'mongodb'
 import { COLLECTIONS } from '#app/domain/constants/db.js'
 
 import { FindPageArgs } from '#app/repos/types.js'
-import { hashOrderStruct, Order } from '#app/domain/types/order.js'
+import { hashOrderStruct, Order, OrderRecord } from '#app/domain/types/order.js'
 
 import { getDb } from '#app/db/mongo.js'
+import { Hex } from 'viem'
+import { OrderState } from '#app/domain/types/order-state.js'
 
 const dbOrders = () => {
   const db = getDb()
-  return db.collection(COLLECTIONS.ORDERS)
+  return db.collection<OrderRecord>(COLLECTIONS.ORDERS)
 }
 
 const dbOrderStates = () => {
   const db = getDb()
-  return db.collection(COLLECTIONS.ORDER_STATES)
+  return db.collection<OrderState>(COLLECTIONS.ORDER_STATES)
 }
 
 // TODO: dont use hashOrderStruct => use viem typedData functions or smth similar
@@ -25,7 +27,7 @@ export const orderRepo = {
   },
 
   async findPage({ filters, from, to, cursor, limit }: FindPageArgs) {
-    const query = { ...filters }
+    const { status, ...query } = filters
 
     if (cursor) {
       // todo: implement cursor with some timestamp
@@ -40,10 +42,10 @@ export const orderRepo = {
 
     let nextCursor: string | null = null
 
-    if (docs.length > limit) {
-      const last = docs[limit - 1]
-      nextCursor = `${last.execution.block.timestamp}_${last._id.toString()}`
-    }
+    // if (docs.length > limit) {
+    //   const last = docs[limit - 1]
+    //   nextCursor = `${last.execution.block.timestamp}_${last._id.toString()}`
+    // }
 
     return {
       items: docs.slice(0, limit),
@@ -54,8 +56,10 @@ export const orderRepo = {
   // === write ===
 
   // TODO: make orderState.status depend on the timestamps of `order`
-  async save(order: Order, chainId: number) {
+  async save(chainId: number, order: Order) {
     const { signature, ...orderCore } = order
+
+    const orderHash = hashOrderStruct(orderCore)
 
     // create order_state
     await dbOrderStates().insertOne({
@@ -66,8 +70,12 @@ export const orderRepo = {
     })
 
     return dbOrders().insertOne({
-      ...orderCore,
-      signature,
+      orderHash,
+      chainId,
+      order: {
+        ...orderCore,
+        signature,
+      },
     })
   },
 }

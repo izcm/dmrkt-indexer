@@ -33,7 +33,7 @@ export const ordersIngest = (fastify: FastifyInstance) => {
       // POST /api/orders
       // X-Chain-Id: 1
 
-      const { insertedId } = await repo.save(order, chainId)
+      const { insertedId } = await repo.save(chainId, order)
 
       res.code(201).header('Location', `/api/orders/${insertedId}`)
 

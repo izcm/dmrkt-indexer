@@ -9,6 +9,12 @@ export enum Side {
 
 export type SideLabel = keyof typeof Side
 
+export type OrderRecord = {
+  orderHash: Hex // = orderHash
+  chainId: number
+  order: Order
+}
+
 export type Order = {
   side: number
   isCollectionBid: boolean

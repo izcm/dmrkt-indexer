@@ -2,13 +2,13 @@ import json from '@a2zb/packages/abis/dmrkt/OrderEngine.json' with { type: 'json
 import type { Abi } from 'viem'
 
 import { getTxMeta } from '#app/rpc/tx-meta.js'
-import { settlementRepo } from '#app/repos/settlement.repo.js'
+import { settlementRepo as repo } from '#app/repos/settlement.repo.js'
 
-import { settlementMetaFromTx } from '#app/listeners/settlements/logic.js'
+import { settlementMetaFromTx as metaFromTx } from '#app/listeners/settlements/logic.js'
 import { DEFAULT_PAGE_LIMIT } from '#app/domain/constants/api.js'
 
 export const runSettlementWorker = async () => {
-  const pending = await settlementRepo.findPendingMeta(25)
+  const pending = await repo.findPendingMeta(25)
 
   if (pending.length === 0) return
 
@@ -18,12 +18,12 @@ export const runSettlementWorker = async () => {
 
       const { receipt, tx } = await getTxMeta(txHash)
 
-      const meta = await settlementMetaFromTx(tx, receipt, json.abi as Abi)
+      const meta = await metaFromTx(tx, receipt, json.abi as Abi)
 
-      await settlementRepo.markMetaDone(txHash, meta)
+      await repo.updateWithMeta(txHash, meta)
     } catch (err: any) {
       console.log('[meta-worker] failed for ', s._id, err.message)
-      await settlementRepo.markMetaFailed(s.execution.txHash, err.message)
+      await repo.markMetaFailed(s.execution.txHash, err.message)
     }
   }
 }
