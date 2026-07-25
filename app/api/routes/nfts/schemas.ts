@@ -17,7 +17,7 @@ export const attributesQueryFields = {
   value: { type: 'string', pattern: '^[^,]+(,[^,]+)*$', maxLength: 256 },
 }
 
-// http://localhost:5000/api/nfts?chainId=11155111&collection=0x18B62abC75900D4aC06915feDdA3b481349dB321&sortField=createdAt&limit=25
+export const NFT_SORT_FIELDS = ['tokenId', ...basicSortFields] as const
 
 export const nftPageSchema = {
   querystring: {
@@ -27,7 +27,7 @@ export const nftPageSchema = {
       ...nftQueryableFields,
       ...attributesQueryFields,
       ...paginationQueryParams,
-      sortField: basicSortFields,
+      sortField: { type: 'string', enum: NFT_SORT_FIELDS },
     },
   },
 }

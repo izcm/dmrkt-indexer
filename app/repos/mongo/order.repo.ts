@@ -12,7 +12,7 @@ import { makeReadRepo } from './shared/_read.js'
 import { makeTsWrite } from './shared/_write.js'
 
 import type { OrderDoc } from './model/docs.js'
-import { ORDER_FIELD_TRANSFORMS } from './model/field-config.js'
+import { ORDER_FIELD_TRANSFORMS, padTokenId } from './model/field-config.js'
 
 const baseRead = makeReadRepo<OrderDoc, OrderKey>(
   orders,
@@ -57,6 +57,7 @@ export const orderRepo: OrderPort = {
           // nft attributes for pagination filters
           attributes: nft?.attributes ?? null,
           db: {
+            tokenId: padTokenId(order.tokenId),
             price: Decimal128.fromString(price),
 
             // cast for sorting only, domain stays uint64 string

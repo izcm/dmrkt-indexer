@@ -204,6 +204,17 @@ describe('settlementRepo', () => {
         expect(inserted).toMatchObject(settlement)
       })
 
+      it('stores a zero-padded db.tokenId for sorting', async () => {
+        const settlement = { ...fakeSettlementDocForChain(), tokenId: '5' }
+
+        const { insertedId } = await repo.save(settlement)
+
+        const inserted = await settlements().findOne({ _id: insertedId })
+
+        expect(inserted?.db.tokenId).toHaveLength(78)
+        expect(inserted?.db.tokenId).toBe('0'.repeat(77) + '5')
+      })
+
       it('throws error on duplicate chainId + orderHash pair', async () => {
         const { settlement, insertedId } = await givenSettlementDocDocExists() // first insert
 

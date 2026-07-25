@@ -44,6 +44,9 @@ describe('nftRepo', () => {
       _id: new ObjectId(),
       updatedAt: 0,
       createdAt: 0,
+      db: {
+        tokenId: '0',
+      },
     })
 
     const nft = await nfts().findOne({ _id: insertedId })
@@ -62,6 +65,17 @@ describe('nftRepo', () => {
 
         const doc = await nfts().findOne(key)
         expect(doc).toMatchObject({ ...key, createdAtBlock: 100, metaStatus: Status.PENDING })
+      })
+
+      it('stores a zero-padded db.tokenId for sorting', async () => {
+        const key = { chainId: CHAIN_ID, collection: addrOf('test'), tokenId: '5' }
+
+        await repo.ensure(key, 100)
+
+        const doc = await nfts().findOne(key)
+
+        expect(doc?.db.tokenId).toHaveLength(78)
+        expect(doc?.db.tokenId).toBe('0'.repeat(77) + '5')
       })
 
       it('does not upsert when doc already exists for the same key', async () => {

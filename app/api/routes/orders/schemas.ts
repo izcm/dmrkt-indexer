@@ -1,4 +1,5 @@
 import {
+  basicSortFields,
   chainEventQueryableFields,
   chainIdSchema,
   paginationQueryParams,
@@ -14,13 +15,16 @@ import { attributesQueryFields } from '../nfts/schemas.js'
 // --- sorting ---
 
 export const ORDER_SORT_FIELDS = [
-  'createdAt',
-  'updatedAt',
+  ...basicSortFields,
   'price',
   'start',
   'expires', // same as end
   'end',
   'actor',
+  'tokenId',
+  'orderHash',
+  'status',
+  'txHash',
 ] as const
 
 // all sort on fields of type string are transformed to ints in repo layer
@@ -30,6 +34,8 @@ export const ORDER_SORT_FIELDS_MAP = {
   start: 'order.start',
   expires: 'order.end',
   end: 'order.end',
+  tokenId: 'order.tokenId',
+  txHash: 'chainEvent.txHash',
 } as const
 
 export type OrderSortField = (typeof ORDER_SORT_FIELDS)[number]

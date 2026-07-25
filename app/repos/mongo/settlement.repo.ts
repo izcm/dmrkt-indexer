@@ -13,7 +13,7 @@ import { makeTsWrite } from './shared/_write.js'
 import { mapToRepoQuery } from './shared/to-repo-query.js'
 
 import { SettlementDoc } from './model/docs.js'
-import { SETTLEMENT_FIELD_TRANSFORMS } from './model/field-config.js'
+import { padTokenId, SETTLEMENT_FIELD_TRANSFORMS } from './model/field-config.js'
 
 // === helpers ===
 
@@ -87,6 +87,7 @@ export const settlementRepo: SettlementPort = {
       attributes: nft?.attributes,
 
       db: {
+        tokenId: padTokenId(settlement.tokenId),
         price: Decimal128.fromString(settlement.price),
       },
     })

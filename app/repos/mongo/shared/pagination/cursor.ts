@@ -12,7 +12,11 @@ export const walkPath = (obj: any, path: string) => {
   }, obj)
 }
 
-export const encodeCursor = (value: number, id: ObjectId) => `${value}_${id.toString()}`
+export const cursorTag = (value: string | number): 's' | 'n' =>
+  typeof value === 'string' ? 's' : 'n'
+
+export const encodeCursor = (value: string | number, id: ObjectId) =>
+  `${cursorTag(value)}${value}_${id.toString()}`
 
 export const buildSortSpec = (field: string, dir: CursorDir) => ({
   [field]: dir,
@@ -26,8 +30,9 @@ export function buildCursorFilter({
 }: Omit<CursorPageCore, 'limit'>) {
   if (!cursor) return null
 
-  const [rawVal, rawId] = cursor.split('_')
-  const value = Number(rawVal)
+  const tag = cursor[0]
+  const [rawVal, rawId] = cursor.slice(1).split('_')
+  const value = tag === 's' ? rawVal : Number(rawVal)
   const id = new ObjectId(rawId)
 
   const cmp = dir === 1 ? '$gt' : '$lt'

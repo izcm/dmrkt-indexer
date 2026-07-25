@@ -7,7 +7,7 @@ import { orderRepo } from '#app/repos/mongo/order.repo.js'
 
 // test helpers
 import { startTestMongo, stopTestMongo } from '#tests/helpers/mongo/mongo-memory.js'
-import { fakeOrderRecord } from '#tests/helpers/fixtures.js'
+import { fakeOrder, fakeOrderRecord } from '#tests/helpers/fixtures.js'
 import { addrOf } from '#tests/helpers/evm-fixtures.js'
 import { OrderDoc } from '#app/repos/mongo/model/docs.js'
 import { fakeOrderDoc } from '#tests/helpers/mongo/to-doc.js'
@@ -138,6 +138,18 @@ describe('orderRepo', () => {
         // compare return values to inserted
         expect(result.chainId).toEqual(inserted.chainId)
         expect(result.orderHash).toEqual(inserted.orderHash)
+      })
+
+      it('stores a zero-padded db.tokenId for sorting', async () => {
+        const orderDoc = fakeOrderRecord({ order: fakeOrder({ tokenId: '5' }) })
+        const { chainId, order } = orderDoc
+
+        const { orderHash } = await repo.ensure(chainId, order)
+
+        const inserted = await orders().findOne({ chainId, orderHash })
+
+        expect(inserted?.db.tokenId).toHaveLength(78)
+        expect(inserted?.db.tokenId).toBe('0'.repeat(77) + '5')
       })
     })
 

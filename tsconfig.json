@@ -13,6 +13,6 @@
       "#tests/*": ["./tests/*"]
     }
   },
-  "include": ["app", "tests"],
+  "include": ["app", "tests", "scripts"],
   "exclude": ["node_modules", "dist"]
 }

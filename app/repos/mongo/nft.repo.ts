@@ -7,17 +7,24 @@ import { Status } from '#app/domain/shared/status.js'
 import { makeReadRepo } from './shared/_read.js'
 import { makeTsWrite } from './shared/_write.js'
 
+import { NFT_FIELD_TRANSFORMS, padTokenId } from './model/field-config.js'
+import { NFTDoc } from './model/docs.js'
+
 // === init common-readers ===
 
-const baseRead = makeReadRepo<NFT, NFTKey>(nfts, k => ({
-  chainId: k.chainId,
-  collection: k.collection,
-  tokenId: k.tokenId,
-}))
+const baseRead = makeReadRepo<NFTDoc, NFTKey>(
+  nfts,
+  k => ({
+    chainId: k.chainId,
+    collection: k.collection,
+    tokenId: k.tokenId,
+  }),
+  NFT_FIELD_TRANSFORMS
+)
 
 // === init write helper ===
 
-const write = makeTsWrite<NFT>(nfts)
+const write = makeTsWrite(nfts)
 
 export const nftRepo: NFTPort = {
   // === read ===
@@ -44,6 +51,9 @@ export const nftRepo: NFTPort = {
           tokenId,
           createdAtBlock,
           metaStatus: Status.PENDING,
+          db: {
+            tokenId: padTokenId(tokenId),
+          },
         },
       },
       {

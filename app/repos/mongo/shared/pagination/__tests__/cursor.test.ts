@@ -1,6 +1,13 @@
 import { ObjectId } from 'mongodb'
 import { describe, expect, it } from 'vitest'
-import { buildCursorFilter, buildSortSpec, encodeCursor, toMongo, walkPath } from '../cursor.js'
+import {
+  buildCursorFilter,
+  buildSortSpec,
+  cursorTag,
+  encodeCursor,
+  toMongo,
+  walkPath,
+} from '../cursor.js'
 import { CursorPageCore } from '../types.js'
 
 /* ======================================
@@ -67,12 +74,24 @@ describe('walkPath', () => {
    encodeCursor
 ======================================================= */
 
-describe('encodeCursor', () => {
-  it('encodes value and ObjectId into a cursor string', () => {
-    const id = new ObjectId()
-    const cursor = encodeCursor(10, id)
+describe('cursorTag', () => {
+  it.each([
+    { value: '001', tag: 's' },
+    { value: 10, tag: 'n' },
+  ])('tags $value as $tag', ({ value, tag }) => {
+    expect(cursorTag(value)).toBe(tag)
+  })
+})
 
-    expect(cursor).toBe(`10_${id.toString()}`)
+describe('encodeCursor', () => {
+  it.each([
+    { value: '001', tag: 's' },
+    { value: 10, tag: 'n' },
+  ])('encodes a $tag-tagged value and ObjectId into a cursor string', ({ value, tag }) => {
+    const id = new ObjectId()
+    const cursor = encodeCursor(value, id)
+
+    expect(cursor).toBe(`${tag}${value}_${id.toString()}`)
   })
 
   it('produces unique cursors for different ObjectIds', () => {
@@ -97,7 +116,7 @@ describe('encodeCursor', () => {
 
     const [value, rawId] = cursor.split('_')
 
-    expect(Number(value)).toBe(5)
+    expect(value).toBe('n5')
     expect(new ObjectId(id)).toEqual(id)
   })
 })
@@ -169,7 +188,7 @@ describe('buildCursorFilter', () => {
     const sortKeyValue = 1
 
     const sortKeyName = overrides.sortField ?? 'sortField'
-    const cursor = overrides.cursor ?? `${sortKeyValue}_${id}`
+    const cursor = overrides.cursor ?? `${cursorTag(sortKeyValue)}${sortKeyValue}_${id}`
     const sortDir = overrides.sortDir ?? 1
 
     const res = buildCursorFilter({ sortField: sortKeyName, sortDir, cursor })
@@ -199,5 +218,24 @@ describe('buildCursorFilter', () => {
 
   it('throws on malformed cursor', () => {
     expect(() => buildCursorFilter({ sortField: 'x', sortDir: 1, cursor: 'bad_cursor' })).toThrow()
+  })
+
+  it('throws on malformed ObjectId in a string-tagged cursor', () => {
+    expect(() =>
+      buildCursorFilter({ sortField: 'x', sortDir: 1, cursor: 's001_notanobjectid' })
+    ).toThrow()
+  })
+
+  it('preserves a large numeric string value exactly, with no Number() precision loss', () => {
+    const id = new ObjectId()
+    // exceeds Number.MAX_SAFE_INTEGER's exact-representation range
+    const value = '90071992547409911234567890'
+    const cursor = encodeCursor(value, id)
+
+    const res = buildCursorFilter({ sortField: 'sortField', sortDir: 1, cursor })
+    if (!res) throw new Error("didn't build cursor")
+
+    expect(res.$or[0]).toStrictEqual({ sortField: { $gt: value } })
+    expect(res.$or[1]).toStrictEqual({ sortField: value, _id: { $gt: id } })
   })
 })

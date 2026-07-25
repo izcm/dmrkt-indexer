@@ -34,7 +34,7 @@ export const nftCollectionsQuery = (fastify: FastifyInstance) => {
           properties: {
             chainId: chainIdSchema,
             ...paginationQueryParams,
-            sortField: basicSortFields,
+            sortField: { type: 'string', enum: basicSortFields },
           },
         },
       },

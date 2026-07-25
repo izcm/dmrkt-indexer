@@ -6,6 +6,7 @@ import { Settlement } from '#app/domain/settlement/model.js'
 import { OrderDoc, SettlementDoc } from '#app/repos/mongo/model/docs.js'
 
 import { fakeOrderRecord, fakeSettlement } from '../fixtures.js'
+import { padTokenId } from '#app/repos/mongo/model/field-config.js'
 
 export const fakeOrderDoc = (overrides: Partial<Settlement> = {}) => ({
   ...toOrderDoc(fakeOrderRecord(overrides)),
@@ -21,6 +22,7 @@ export function toOrderDoc(orderRecord: OrderRecord): OrderDoc {
   return {
     ...orderRecord,
     db: {
+      tokenId: padTokenId(o.tokenId),
       price: Decimal128.fromString(o.price),
 
       // cast for sorting only, domain stays uint64 string
@@ -34,6 +36,7 @@ export function toSettlementDoc(settlement: Settlement): SettlementDoc {
   return {
     ...settlement,
     db: {
+      tokenId: padTokenId(settlement.tokenId),
       price: Decimal128.fromString(settlement.price),
     },
   }

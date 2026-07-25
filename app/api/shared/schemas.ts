@@ -15,7 +15,7 @@ export const chainIdSchema = {
 // range + sort fields are set separately in each query route
 export const paginationQueryParams = {
   limit: { type: 'integer', minimum: 1, maximum: 100 },
-  cursor: { type: 'string', pattern: '^[^_]{1,78}_[a-fA-F0-9]{24}$', maxLength: 103 },
+  cursor: { type: 'string', pattern: '^[sn][^_]{1,78}_[a-fA-F0-9]{24}$', maxLength: 104 },
   sortDir: { type: 'string', enum: ['asc', 'desc'] },
 } as const
 
@@ -25,10 +25,7 @@ export const chainEventQueryableFields = {
 } as const
 
 // absolute minimal sortfields
-export const basicSortFields = {
-  type: 'string',
-  enum: ['createdAt', 'updatedAt'],
-}
+export const basicSortFields = ['createdAt', 'updatedAt']
 
 export const byIdParams = (regex: string) =>
   ({

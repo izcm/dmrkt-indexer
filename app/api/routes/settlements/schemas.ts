@@ -1,4 +1,5 @@
 import {
+  basicSortFields,
   chainEventQueryableFields,
   chainIdSchema,
   paginationQueryParams,
@@ -12,16 +13,19 @@ import { attributesQueryFields } from '../nfts/schemas.js'
 // --- sort whitelist + domain-shape field mapping ---
 
 export const SETTLEMENT_SORT_FIELDS = [
-  'createdAt',
-  'updatedAt',
+  ...basicSortFields,
   'price',
   'buyer',
   'seller',
   'timestamp',
+  'tokenId',
+  'orderHash',
+  'txHash',
 ] as const
 
 export const SETTLEMENT_SORT_FIELDS_MAP = {
   timestamp: 'execution.block.timestamp',
+  txHash: 'execution.txHash',
 } as const
 
 export const settlementQueryableFields = {
