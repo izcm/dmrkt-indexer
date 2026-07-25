@@ -35,6 +35,7 @@ export const ORDER_SORT_FIELDS_MAP = {
   expires: 'order.end',
   end: 'order.end',
   tokenId: 'order.tokenId',
+  side: 'order.side',
 } as const
 
 export type OrderSortField = (typeof ORDER_SORT_FIELDS)[number]
