@@ -20,7 +20,6 @@ export const SETTLEMENT_SORT_FIELDS = [
   'timestamp',
   'tokenId',
   'orderHash',
-  'txHash',
 ] as const
 
 export const SETTLEMENT_SORT_FIELDS_MAP = {

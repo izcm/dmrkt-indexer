@@ -16,6 +16,7 @@ import { attributesQueryFields } from '../nfts/schemas.js'
 
 export const ORDER_SORT_FIELDS = [
   ...basicSortFields,
+  'side',
   'price',
   'start',
   'expires', // same as end
@@ -24,7 +25,6 @@ export const ORDER_SORT_FIELDS = [
   'tokenId',
   'orderHash',
   'status',
-  'txHash',
 ] as const
 
 // all sort on fields of type string are transformed to ints in repo layer
@@ -35,7 +35,6 @@ export const ORDER_SORT_FIELDS_MAP = {
   expires: 'order.end',
   end: 'order.end',
   tokenId: 'order.tokenId',
-  txHash: 'chainEvent.txHash',
 } as const
 
 export type OrderSortField = (typeof ORDER_SORT_FIELDS)[number]
