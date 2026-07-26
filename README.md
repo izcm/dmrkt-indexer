@@ -9,13 +9,14 @@ It's an indexer that:
 - Exposes REST + realtime feeds for consumers
 
 > [!WARNING]
-> Not production ready.
+> Should only run in production if `STRICT_INGESTION` flag is set.
 
 **Contents** — [Overview](#overview) · [Prerequisites](#prerequisites) · [Run](#run) · [Web3 layer](#web3-layer) · [Architecture](#architecture) · [Data Flow](#data-flow) · [Reference](#reference)
 
 For routes, events, and query formats — see [Reference](#reference):
 
 - [API](#api-1)
+- [Rate limiting](#rate-limiting)
 - [WebSocket events](#websocket-events)
 
 ---
@@ -77,18 +78,25 @@ RPC URLs in `chains.json` support `${ENV_VAR}` placeholders that are substituted
 
 ### Environment variables
 
-| VAR                  | Description                                                   | Required | Example                           |
-| -------------------- | ------------------------------------------------------------- | -------- | --------------------------------- |
-| `MONGODB_URI`        | MongoDB connection string                                     | Yes      | `mongodb://localhost:27017`       |
-| `CHAINS_CONFIG`      | path to chains.json                                           | No       | `./chains.json`                   |
-| `FORK_START_BLOCK`   | block used as starting point for polling                      | No       | `21000000`                        |
-| `CORS_ORIGIN`        | comma-separated allowed origins; omit to allow all            | No       | `https://foo.com,https://bar.com` |
-| `WORKER_INTERVAL_MS` | sleep duration between worker cycles                          | No       | `10000`                           |
-| `STRICT_INGESTION`   | reject orders on collections not already known to the indexer | No       | `true`                            |
+| VAR                  | Description                                                                       | Required | Example                           |
+| -------------------- | --------------------------------------------------------------------------------- | -------- | --------------------------------- |
+| `MONGODB_URI`        | MongoDB connection string                                                         | Yes      | `mongodb://localhost:27017`       |
+| `CHAINS_CONFIG`      | path to chains.json                                                               | No       | `./chains.json`                   |
+| `FORK_START_BLOCK`   | block used as starting point for polling                                          | No       | `21000000`                        |
+| `CORS_ORIGIN`        | comma-separated allowed origins; omit to allow all                                | No       | `https://foo.com,https://bar.com` |
+| `WORKER_INTERVAL_MS` | sleep duration between worker cycles                                              | No       | `10000`                           |
+| `STRICT_INGESTION`   | reject orders on collections not already known to the indexer                     | No       | `true`                            |
+| `MODE`               | set to `DEMO` to relax CORS and rate limits — see [Rate limiting](#rate-limiting) | No       | `DEMO`                            |
 
 If `FORK_START_BLOCK` is not set, polling starts at the genesis block.
 
 If `STRICT_INGESTION` is not `"true"`, orders are accepted for any collection.
+
+`MODE=DEMO` flips `IS_DEMO` on, which acts as a switch across a few areas of the app:
+
+- CORS origin is forced to allow all (`CORS_ORIGIN` is ignored)
+- the POST `/api/orders` rate limit is disabled entirely
+- `/api/healthcheck` is registered (otherwise omitted)
 
 ---
 
@@ -487,6 +495,21 @@ export const orderActions = makeOrderActions({
 | `enrich/nft/meta`                       | enriches NFTs with token URI and metadata        |
 | `enrich/settlement/call-reconstruction` | reconstructs transaction context for settlements |
 | `poll/nft-collection/backfill`          | backfills NFTs from historical `Transfer` events |
+
+### Rate limiting
+
+Enforced via `@fastify/rate-limit`, keyed by IP.
+
+| Scope               | Limit            | Notes                                                      |
+| ------------------- | ---------------- | ---------------------------------------------------------- |
+| Global (all routes) | 350 req / minute | Applies to every route by default.                         |
+| 404 fallback        | 30 req / minute  | Separate, tighter limit for unmatched routes.              |
+| `POST /api/orders`  | 60 req / minute  | Overrides the global limit. Disabled when `IS_DEMO` is on. |
+
+A rate-limited request receives a `429` response.
+
+> [!NOTE]
+> When `MODE=DEMO` (see [Environment variables](#environment-variables)), the `POST /api/orders` limit is removed so the public demo isn't hampered by real users hitting it. The global and 404 limits still apply.
 
 ### API
 
