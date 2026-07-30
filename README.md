@@ -509,7 +509,7 @@ Enforced via `@fastify/rate-limit`, keyed by IP.
 A rate-limited request receives a `429` response.
 
 > [!NOTE]
-> When `MODE=DEMO` (see [Environment variables](#environment-variables)), the `POST /api/orders` limit is removed so the public demo isn't hampered by real users hitting it. The global and 404 limits still apply.
+> When `MODE=DEMO` (see [Environment variables](#environment-variables)), the `POST /api/orders` limit is removed. This lets the demo's simulation service post orders without implementing any waiting mechanisms.
 
 ### API
 
