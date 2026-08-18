@@ -11,6 +11,9 @@ It's an indexer that:
 > [!WARNING]
 > Should only run in production if `STRICT_INGESTION` flag is set.
 
+> [!NOTE]
+> This should have been a relational database — got too attached to MongoDB early on and built a fair amount of abstraction around it instead of changing course.
+
 **Contents** — [Overview](#overview) · [Prerequisites](#prerequisites) · [Run](#run) · [Web3 layer](#web3-layer) · [Architecture](#architecture) · [Data Flow](#data-flow) · [Reference](#reference)
 
 For routes, events, and query formats — see [Reference](#reference):
